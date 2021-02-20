@@ -39,7 +39,7 @@ class TopshotQueries {
 
     /**
      * Kind of like getMomentTransactionHistory, but it returns the
-     * 'average' price (determined by ML model) rather than
+     * expected value of that serial number (highest serial if non-provided) as determined by ML model rather than
      * all of the individual sales numbers.
      * @param {*} momentID 
      * @param {if serialNumber is -1, it will assume highest serial number} serialNumber 
@@ -53,7 +53,7 @@ class TopshotQueries {
     function getPlayerTransactionHistory(playerID){
         //TODO
         //playerAnalyzer(playerID)
-
+            //return playerAnalyzer.getTransactionHistory();
     }
 
     /**
@@ -62,6 +62,8 @@ class TopshotQueries {
      */
     function getTotalMarketVolumeHistory(){
         //TODO
+        //marketAnalyzer
+        //return marketAnalyzer.getTotalVolumeHistory()
     }
 
     /**
@@ -70,6 +72,8 @@ class TopshotQueries {
      */
     function getLowOutlierSalesListings(){
         //TODO
+        //salesAnalyzer() 
+        //salesAnalyzer.getOutlierSalesListings()
     }
 
     /**
@@ -78,5 +82,7 @@ class TopshotQueries {
      */
     function getHistoryOfCheapestSalesListing(momentID){
         //TODO
+        //momentAnalyzer(momentID)
+        //momentAnalyzer.getHistoryOfCheapestSalesListing();
     }
 }
