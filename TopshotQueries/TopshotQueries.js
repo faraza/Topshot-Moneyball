@@ -16,12 +16,13 @@ class TopshotQueries {
     * 
     * returns a list containing tuples of [timestamp, value]
     */
-    function getPortfolioValueOverTime(topshotUsername) {
+    function getPortfolioValueOverTime(topshotUsername) {        
         //TODO        
-    }
 
-    function getValueOfMomentAtTime(momentID, timestampToEvaluate){
-        //TODO
+        //topshotUserAnalyzer(topshotUsername)
+            //This class will figure out everything in the wallet at each time
+            //Then run momentAnalyzer on each and sum the price up
+        //return topshotUserAnalyzer.getPortfolioValueOverTime()
     }
 
     /**
@@ -32,10 +33,27 @@ class TopshotQueries {
      */
     function getMomentTransactionHistory(momentID){
         //TODO
+        //momentAnalyzer(momentID)
+        //return momentAnalyzer.getTransactionHistory();
+    }
+
+    /**
+     * Kind of like getMomentTransactionHistory, but it returns the
+     * expected value of that serial number (highest serial if non-provided) as determined by ML model rather than
+     * all of the individual sales numbers.
+     * @param {*} momentID 
+     * @param {if serialNumber is -1, it will assume highest serial number} serialNumber 
+     */
+    function getMomentValueOverTime(momentID, serialNumber = -1){
+        //TODO
+        //momentAnalyzer(momentID, serialNumber)
+            //return momentAnalyzer.getValueHistory();
     }
 
     function getPlayerTransactionHistory(playerID){
         //TODO
+        //playerAnalyzer(playerID)
+            //return playerAnalyzer.getTransactionHistory();
     }
 
     /**
@@ -44,6 +62,8 @@ class TopshotQueries {
      */
     function getTotalMarketVolumeHistory(){
         //TODO
+        //marketAnalyzer
+        //return marketAnalyzer.getTotalVolumeHistory()
     }
 
     /**
@@ -52,6 +72,8 @@ class TopshotQueries {
      */
     function getLowOutlierSalesListings(){
         //TODO
+        //salesAnalyzer() 
+        //salesAnalyzer.getOutlierSalesListings()
     }
 
     /**
@@ -60,5 +82,7 @@ class TopshotQueries {
      */
     function getHistoryOfCheapestSalesListing(momentID){
         //TODO
+        //momentAnalyzer(momentID)
+        //momentAnalyzer.getHistoryOfCheapestSalesListing();
     }
 }
