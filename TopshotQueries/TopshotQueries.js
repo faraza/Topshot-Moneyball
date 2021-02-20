@@ -7,7 +7,7 @@
 
 class TopshotQueries {
     constructor() { 
-        //TODO: instantiate transactionFetcher and transactionAnalyzer
+        //TODO: instantiate transactionAnalyzer, salesAnalyzer, and momentAnalyzer
     }
     
     /**
@@ -17,10 +17,11 @@ class TopshotQueries {
     * returns a list containing tuples of [timestamp, value]
     */
     function getPortfolioValueOverTime(topshotUsername) {
+        //TODO        
+    }
+
+    function getValueOfMomentAtTime(momentID, timestampToEvaluate){
         //TODO
-            //1: Get all moments from the username
-            //2: For each day from 30 days ago to today
-                //Query momentAnalyzer to get value
     }
 
     /**
@@ -42,6 +43,22 @@ class TopshotQueries {
      * MarketVolume objects describe number of transactions and total price within that interval
      */
     function getTotalMarketVolumeHistory(){
+        //TODO
+    }
+
+    /**
+     * Returns a list of lowOutlierSales objects.
+     * These objects list a moment, the outlier sales listing price, and the other sales listing prices
+     */
+    function getLowOutlierSalesListings(){
+        //TODO
+    }
+
+    /**
+     * Returns a list of [timestamp, cheapestSalesListingPrice] tuples for a given moment
+     * @param {*} momentID 
+     */
+    function getHistoryOfCheapestSalesListing(momentID){
         //TODO
     }
 }
