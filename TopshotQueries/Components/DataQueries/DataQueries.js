@@ -50,6 +50,16 @@ module.exports = class DataQueries{
         }))
     }
 
+    /*
+    static async getListingEventsForHeightRange(start, end){
+        const response = await fcl.send(
+            await sdk.build([sdk.getEvents(eventType, start, toBlock)])
+        );
+    
+        // Return a list of events
+        return response.events;
+    }*/
+    
     /**
      * 
      * @param {*} topshotUsername 
