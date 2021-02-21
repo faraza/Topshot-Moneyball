@@ -15,7 +15,6 @@ module.exports = class TopshotUserAnalyzer{
         this.username = username;
     }
 
-    //TODO: If getting moment value at an arbitrary time is too hard, we can modify this to just current moment value
     getCurrentPortfolioValue(){
         const currentTime = 1000; //TODO        
         return this.getPortfolioValueAtTime(currentTime);        
@@ -26,10 +25,10 @@ module.exports = class TopshotUserAnalyzer{
         const currentTimestamp = 1000; //TODO
         const interval = 100;
 
-        portfolioValueHistory = []
+        let portfolioValueHistory = []
 
         for(let timestamp = startingTimestamp; timestamp <= currentTimestamp; timestamp += interval){
-            portfolioValueTuple = [timestamp, this.getPortfolioValueAtTime(timestamp)];
+            let portfolioValueTuple = [timestamp, this.getPortfolioValueAtTime(timestamp)];
             portfolioValueHistory.push(portfolioValueTuple);
         }
 
@@ -40,7 +39,7 @@ module.exports = class TopshotUserAnalyzer{
         const momentsInWallet = DataQueries.getAllMomentsOwnedByTopshotUsername(this.username, timestamp);
 
         let valueOfPortfolio = 0;
-        for(let moment in momentsWallet){
+        for(let moment in momentsInWallet){
             //TODO
             //let momentAnalyzer = new MomentAnalyzer(moment);
             //valueOfPortfolio += momentAnalyzer.getValueAtTime(timestamp);
@@ -49,10 +48,4 @@ module.exports = class TopshotUserAnalyzer{
         return valueOfPortfolio;
 
     }
-
-    getWalletContentsAtTime(timestamp){
-        return DataQueries.getAllMomentsOwnedByTopshotUsername(username, timestamp);
-    }
-
-
 }
