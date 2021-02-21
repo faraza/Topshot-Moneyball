@@ -5,6 +5,7 @@
  */
 
 const DataQueries = require('../DataQueries/DataQueries')
+const MomentMath = require('./Math/MomentMath')
 
 module.exports = class MomentAnalyzer{
     momentID = -1;
@@ -14,17 +15,25 @@ module.exports = class MomentAnalyzer{
     }
     
     getValueHistoryOfSerialNumber(serialNumber){
-        //TODO
-        console.log("getValueHistoryOfSerialNumber for moment: " + this.momentID + " with serial: " + serialNumber);
+        const startingTimestamp = 0; //TODO: October 2020, when the platform was launched?
+        const currentTimestamp = 1000; //TODO
+        const interval = 100;
 
+        momentValueHistory = []
+
+        for(let timestamp = startingTimestamp; timestamp <= currentTimestamp; timestamp += interval){
+            momentValueTuple = [timestamp, this.getValueOfSerialNumberAtTime(serialNumber, timestamp)];
+            momentValueHistory.push(portfolioValueTuple);
+        }
+
+        return momentValueHistory;
     }
 
     getValueOfSerialNumberAtTime(serialNumber, time){
-        //TODO
+        return MomentMath.getValueOfMomentWithSerialAtTime(momentID, serialNumber, time);
     }
 
     getTransactionHistory(){
-        //TODO
-        console.log("Get transaction history for moment: " + this.momentID);
+        return DataQueries.getAllTransactionsOfMoment(momentID);        
     }
 }

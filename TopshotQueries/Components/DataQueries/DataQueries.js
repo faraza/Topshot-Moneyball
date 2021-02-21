@@ -5,6 +5,8 @@
  * If you want to filter the data, do them through this class instead of further upstream
  * so it can optimize the database lookups.
  * 
+ * 
+ * TODO: Thomas, you gotta figure this out.
  */
 
 module.exports = class DataQueries{
@@ -29,11 +31,15 @@ module.exports = class DataQueries{
     }
 
     static convertTopshotUsernameToBlockchainUserID(topshotUsername){
-        //TODO
+        //TODO: Do some HTTP GET stuff to figure this out
         return topshotUsername + "_CONVERTED";
     }
     
     static getAllTransactionsOfMoment(momentID){
+        //TODO
+    }
+
+    static getAllActiveSalesListingsGroupedByMoment(){
         //TODO
     }
 }
