@@ -15,7 +15,6 @@ module.exports = class TopshotUserAnalyzer{
         this.username = username;
     }
 
-    //TODO: If getting moment value at an arbitrary time is too hard, we can modify this to just current moment value
     getCurrentPortfolioValue(){
         const currentTime = 1000; //TODO        
         return this.getPortfolioValueAtTime(currentTime);        
