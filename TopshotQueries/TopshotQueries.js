@@ -1,11 +1,12 @@
 /**
- * Class the server class and CLI calls to get useful topshot data like transactions and sales.
- * Don't call its components directly from one of those classes.
+ * Class the server and CLI call to get useful topshot data like transactions and sales.
+ * Don't call any of its components directly from one of those classes. Add a new query method to this instead.
  * 
  * TODO: Make all methods take User as an additional parameter so we can log more intelligently
  */
 
-const MomentAnalyzer = require('./Components/MomentAnalyzer/MomentAnalyzer') 
+const MomentAnalyzer = require('./Components/MomentAnalyzer/MomentAnalyzer'); 
+const SalesListingAnalyzer = require('./Components/SalesListingAnalyzer/SalesListingAnalyzer');
 const TopshotUserAnalyzer = require('./Components/TopshotUserAnalyzer/TopshotUserAnalyzer')
 
 //TODO: Make all the functions async and do error handling
@@ -51,10 +52,9 @@ class TopshotQueries {
      * TODO: Add filters like maximum price we want to consider
      * and players to consider (like only care about stars)
      */
-    getLowOutlierSalesListings(){
-        //TODO
-        //salesListingAnalyzer() 
-        //salesListingAnalyzer.getOutlierSalesListings()
+    getLowOutlierSalesListingsOfAllMoments(){        
+        const salesListingAnalyzer = new SalesListingAnalyzer();
+        salesListingAnalyzer.getLowOutliersForAllMoments()
     }
 
     /**
@@ -62,8 +62,8 @@ class TopshotQueries {
      * @param {*} momentID 
      */
     getHistoryOfCheapestSalesListing(momentID){             
-        //TODO
-        //salesListing.getHistoryOfCheapestSalesListingForMoment();
+        const salesListingAnalyzer = new SalesListingAnalyzer();        
+        salesListingAnalyzer.getHistoryOfCheapestListingForMoment(momentID);
     }
 
     getPlayerTransactionHistory(playerID){
@@ -90,3 +90,6 @@ test.getMomentValueHistoryOfSerialNumber("MOMENTID");
 test.getMomentValueHistoryOfSerialNumber("MOMENTID", "MYSERIAL");
 
 test.getPortfolioValueHistory("TOPSHOTUSERNAME");
+
+test.getLowOutlierSalesListingsOfAllMoments();
+test.getHistoryOfCheapestSalesListing("MOMENTID");

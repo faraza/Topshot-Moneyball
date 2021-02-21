@@ -1,6 +1,7 @@
 /**
- * Call this class to analyze moments and get back
- * data lists
+ * Call this class to: 
+ * 1) Run math and other analytics on moments  
+ * 2) Get back data lists about moments
  */
 
 module.exports = class MomentAnalyzer{
