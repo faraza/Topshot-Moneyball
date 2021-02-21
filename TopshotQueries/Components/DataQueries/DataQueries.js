@@ -1,4 +1,5 @@
-const flow = require('@onflow/sdk')
+const fcl = require('@onflow/fcl')
+const types = require('@onflow/types')
 
 /**
  * Use this class to get all data you might need from the database or blockchain
@@ -9,15 +10,44 @@ const flow = require('@onflow/sdk')
  * 
  */
 
+
+fcl.config().put("accessNode.api", "https://flow-access-mainnet.portto.io") 
+
 module.exports = class DataQueries{
 
     /**
      * 
-     * @param {*} blockchainUserID 
-     * @param {If nothing is passed or negative number is passed, assumes curren time} timestamp 
+     * @param {string} address the hex number representing account blockchain address
      */
-    static getAllMomentsOwnedByBlockchainUserID(blockchainUserID, timestamp = -1){
-        //TODO
+    static async getAllMomentsOwnedByBlockchainUserID(address){
+        const data = await fcl.send([
+            fcl.script`
+            import TopShot from 0x0b2a3299cc857e29
+            import Market from 0xc1e4f4f4c4257510
+
+            pub fun main(address: Address): {UInt64: TopShot.MomentData} {
+                let account = getAccount(address)
+                let topshotSaleCollection = account.getCapability(/public/MomentCollection).borrow<&{TopShot.MomentCollectionPublic}>()!
+                let data: {UInt64: TopShot.MomentData} = {}
+                for id in topshotSaleCollection.getIDs()! {
+                    let nft = topshotSaleCollection.borrowMoment(id: id)!
+                    data.insert(key: id, nft.data) 
+                }
+                return data
+            }
+            `,
+            fcl.args([
+                fcl.arg(address, types.Address),
+            ]),
+        ])
+        .then(fcl.decode)
+
+        return Object.keys(data).map((module_id) => ({
+            module_id: module_id,
+            set_id: data[module_id].setID,
+            play_id: data[module_id].setID,
+            serial_number: data[module_id].serialNumber,
+        }))
     }
 
     /**
