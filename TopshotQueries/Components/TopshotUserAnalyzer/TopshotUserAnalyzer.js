@@ -6,6 +6,8 @@
  * 
  */
 
+ const DataQueries = require('../DataQueries/DataQueries')
+
 module.exports = class TopshotUserAnalyzer{
     username = -1;
 
@@ -13,14 +15,44 @@ module.exports = class TopshotUserAnalyzer{
         this.username = username;
     }
 
-    static convertUsernameToBlockchainUserID(username){
-        //TODO
-        return username + "_TOBLOCKCHAINID"
+    //TODO: If getting moment value at an arbitrary time is too hard, we can modify this to just current moment value
+    getCurrentPortfolioValue(){
+        const currentTime = 1000; //TODO        
+        return this.getPortfolioValueAtTime(currentTime);        
     }
 
-    getPortfolioValueHistory(){
-        //TODO
-        console.log("user analyzer: " + this.username + " converted: " + 
-        TopshotUserAnalyzer.convertUsernameToBlockchainUserID(this.username) + " get portfolio value history")
+    getPortfolioValueHistory(){        
+        const startingTimestamp = 0; //TODO: October 2020, when the platform was launched?
+        const currentTimestamp = 1000; //TODO
+        const interval = 100;
+
+        portfolioValueHistory = []
+
+        for(let timestamp = startingTimestamp; timestamp <= currentTimestamp; timestamp += interval){
+            portfolioValueTuple = [timestamp, this.getPortfolioValueAtTime(timestamp)];
+            portfolioValueHistory.push(portfolioValueTuple);
+        }
+
+        return portfolioValueHistory;        
     }
+
+    getPortfolioValueAtTime(timestamp){
+        const momentsInWallet = DataQueries.getAllMomentsOwnedByTopshotUsername(this.username, timestamp);
+
+        let valueOfPortfolio = 0;
+        for(let moment in momentsWallet){
+            //TODO
+            //let momentAnalyzer = new MomentAnalyzer(moment);
+            //valueOfPortfolio += momentAnalyzer.getValueAtTime(timestamp);
+        }
+
+        return valueOfPortfolio;
+
+    }
+
+    getWalletContentsAtTime(timestamp){
+        return DataQueries.getAllMomentsOwnedByTopshotUsername(username, timestamp);
+    }
+
+
 }

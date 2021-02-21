@@ -4,6 +4,8 @@
  * 2) Get back data lists about moments
  */
 
+const DataQueries = require('../DataQueries/DataQueries')
+
 module.exports = class MomentAnalyzer{
     momentID = -1;
     
