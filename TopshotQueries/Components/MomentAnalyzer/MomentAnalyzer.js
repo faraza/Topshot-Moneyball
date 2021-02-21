@@ -14,7 +14,11 @@ module.exports = class MomentAnalyzer{
         this.momentID = momentID;
     }
     
-    getValueHistoryOfSerialNumber(serialNumber){
+    /**
+     * 
+     * @param {If < 0, defaults to highest serial} serialNumber 
+     */
+    getValueHistoryOfSerialNumber(serialNumber = -1){
         const startingTimestamp = 0; //TODO: October 2020, when the platform was launched?
         const currentTimestamp = 1000; //TODO
         const interval = 100;
