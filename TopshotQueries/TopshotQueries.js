@@ -5,7 +5,9 @@
  * TODO: Make all methods take User as an additional parameter so we can log more intelligently
  */
 
-class TopshotQueries {
+const MomentAnalyzer = require('./Components/MomentAnalyzer/MomentAnalyzer') 
+
+ class TopshotQueries {
     constructor() { 
         //TODO: instantiate transactionAnalyzer, salesAnalyzer, and momentAnalyzer
     }
@@ -16,7 +18,7 @@ class TopshotQueries {
     * 
     * returns a list containing tuples of [timestamp, value]
     */
-    function getPortfolioValueOverTime(topshotUsername) {        
+    getPortfolioValueOverTime(topshotUsername) {        
         //TODO        
 
         //topshotUserAnalyzer(topshotUsername)
@@ -31,10 +33,9 @@ class TopshotQueries {
      * Returns a list of transactions sorted from oldest to newest
      * TODO: Right now, we're returning all transactions, but later we'll implement a smart algorithm to reduce it
      */
-    function getMomentTransactionHistory(momentID){
-        //TODO
-        //momentAnalyzer(momentID)
-        //return momentAnalyzer.getTransactionHistory();
+    getMomentTransactionHistory(momentID){
+        let momentAnalyzer = new MomentAnalyzer(momentID);
+        return momentAnalyzer.getTransactionHistory();        
     }
 
     /**
@@ -44,13 +45,13 @@ class TopshotQueries {
      * @param {*} momentID 
      * @param {if serialNumber is -1, it will assume highest serial number} serialNumber 
      */
-    function getMomentValueOverTime(momentID, serialNumber = -1){
+    getMomentValueOverTime(momentID, serialNumber = -1){
         //TODO
-        //momentAnalyzer(momentID, serialNumber)
-            //return momentAnalyzer.getValueHistory();
+        //momentAnalyzer(momentID)
+            //return momentAnalyzer.getValueHistoryOfSerialNumber(serialNumber);
     }
 
-    function getPlayerTransactionHistory(playerID){
+    getPlayerTransactionHistory(playerID){
         //TODO
         //playerAnalyzer(playerID)
             //return playerAnalyzer.getTransactionHistory();
@@ -60,7 +61,7 @@ class TopshotQueries {
      * Returns a list of MarketVolume objects (sorted by oldest date to newest).
      * MarketVolume objects describe number of transactions and total price within that interval
      */
-    function getTotalMarketVolumeHistory(){
+    getTotalMarketVolumeHistory(){
         //TODO
         //marketAnalyzer
         //return marketAnalyzer.getTotalVolumeHistory()
@@ -69,20 +70,26 @@ class TopshotQueries {
     /**
      * Returns a list of lowOutlierSales objects.
      * These objects list a moment, the outlier sales listing price, and the other sales listing prices
+     * TODO: Add filters like maximum price we want to consider
+     * and players to consider (like only care about stars)
      */
-    function getLowOutlierSalesListings(){
+    getLowOutlierSalesListings(){
         //TODO
-        //salesAnalyzer() 
-        //salesAnalyzer.getOutlierSalesListings()
+        //salesListingAnalyzer() 
+        //salesListingAnalyzer.getOutlierSalesListings()
     }
 
     /**
      * Returns a list of [timestamp, cheapestSalesListingPrice] tuples for a given moment
      * @param {*} momentID 
      */
-    function getHistoryOfCheapestSalesListing(momentID){
+    getHistoryOfCheapestSalesListing(momentID){
         //TODO
         //momentAnalyzer(momentID)
         //momentAnalyzer.getHistoryOfCheapestSalesListing();
     }
 }
+
+
+let test = new TopshotQueries();
+test.getMomentTransactionHistory("123");
