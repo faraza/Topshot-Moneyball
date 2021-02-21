@@ -10,7 +10,7 @@ const SalesListingAnalyzer = require('./Components/SalesListingAnalyzer/SalesLis
 const TopshotUserAnalyzer = require('./Components/TopshotUserAnalyzer/TopshotUserAnalyzer')
 
 //TODO: Make all the functions async and do error handling
-class TopshotQueries {    
+module.exports = class TopshotQueries {    
     
     /**
     * 
@@ -69,7 +69,7 @@ class TopshotQueries {
     getPlayerTransactionHistory(playerID){
         //TODO
         //playerAnalyzer(playerID)
-            //return playerAnalyzer.getTransactionHistory();
+        //return playerAnalyzer.getTransactionHistory();
     }
 
     /**
@@ -82,14 +82,3 @@ class TopshotQueries {
         //return marketAnalyzer.getTotalVolumeHistory()
     }
 }
-
-
-let test = new TopshotQueries();
-test.getMomentTransactionHistory("MOMENTID");
-test.getMomentValueHistoryOfSerialNumber("MOMENTID");
-test.getMomentValueHistoryOfSerialNumber("MOMENTID", "MYSERIAL");
-
-test.getPortfolioValueHistory("TOPSHOTUSERNAME");
-
-test.getLowOutlierSalesListingsOfAllMoments();
-test.getHistoryOfCheapestSalesListing("MOMENTID");
