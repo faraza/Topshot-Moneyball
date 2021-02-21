@@ -4,6 +4,9 @@
  * 2) Get back data lists about moments
  */
 
+const DataQueries = require('../DataQueries/DataQueries')
+const MomentMath = require('./Math/MomentMath')
+
 module.exports = class MomentAnalyzer{
     momentID = -1;
     
@@ -11,18 +14,30 @@ module.exports = class MomentAnalyzer{
         this.momentID = momentID;
     }
     
-    getValueHistoryOfSerialNumber(serialNumber){
-        //TODO
-        console.log("getValueHistoryOfSerialNumber for moment: " + this.momentID + " with serial: " + serialNumber);
+    /**
+     * 
+     * @param {If < 0, defaults to highest serial} serialNumber 
+     */
+    getValueHistoryOfSerialNumber(serialNumber = -1){
+        const startingTimestamp = 0; //TODO: October 2020, when the platform was launched?
+        const currentTimestamp = 1000; //TODO
+        const interval = 100;
 
+        let momentValueHistory = []
+
+        for(let timestamp = startingTimestamp; timestamp <= currentTimestamp; timestamp += interval){
+            const momentValueTuple = [timestamp, this.getValueOfSerialNumberAtTime(serialNumber, timestamp)];
+            momentValueHistory.push(momentValueTuple);
+        }
+
+        return momentValueHistory;
     }
 
     getValueOfSerialNumberAtTime(serialNumber, time){
-        //TODO
+        return MomentMath.getValueOfMomentWithSerialAtTime(this.momentID, serialNumber, time);
     }
 
     getTransactionHistory(){
-        //TODO
-        console.log("Get transaction history for moment: " + this.momentID);
+        return DataQueries.getAllTransactionsOfMoment(this.momentID);        
     }
 }
