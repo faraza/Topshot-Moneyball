@@ -19,21 +19,21 @@ module.exports = class MomentAnalyzer{
         const currentTimestamp = 1000; //TODO
         const interval = 100;
 
-        momentValueHistory = []
+        let momentValueHistory = []
 
         for(let timestamp = startingTimestamp; timestamp <= currentTimestamp; timestamp += interval){
-            momentValueTuple = [timestamp, this.getValueOfSerialNumberAtTime(serialNumber, timestamp)];
-            momentValueHistory.push(portfolioValueTuple);
+            const momentValueTuple = [timestamp, this.getValueOfSerialNumberAtTime(serialNumber, timestamp)];
+            momentValueHistory.push(momentValueTuple);
         }
 
         return momentValueHistory;
     }
 
     getValueOfSerialNumberAtTime(serialNumber, time){
-        return MomentMath.getValueOfMomentWithSerialAtTime(momentID, serialNumber, time);
+        return MomentMath.getValueOfMomentWithSerialAtTime(this.momentID, serialNumber, time);
     }
 
     getTransactionHistory(){
-        return DataQueries.getAllTransactionsOfMoment(momentID);        
+        return DataQueries.getAllTransactionsOfMoment(this.momentID);        
     }
 }
