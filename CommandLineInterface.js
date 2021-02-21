@@ -29,6 +29,14 @@ if (argv.account) {
         console.log(moments);
     })()
 }
+
+if (argv.listings ) {
+    (async function() {
+        let height = await DataQueries.getCurrentBlockHeight();
+        let moments = await DataQueries.getListingEventsForHeightRange(height - 1500, height);
+        console.log(moments);
+    })()
+}
     
 /*
 function basicTests(){

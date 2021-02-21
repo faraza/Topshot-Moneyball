@@ -1,5 +1,6 @@
 const fcl = require('@onflow/fcl')
 const types = require('@onflow/types')
+const sdk = require('@onflow/sdk')
 
 /**
  * Use this class to get all data you might need from the database or blockchain
@@ -16,7 +17,7 @@ fcl.config().put("accessNode.api", "https://flow-access-mainnet.portto.io")
 module.exports = class DataQueries{
 
     /**
-     * 
+     * Example getAllMomentsOwnedByBlockchainUserID("0xdc37f43c2d98de15")
      * @param {string} address the hex number representing account blockchain address
      */
     static async getAllMomentsOwnedByBlockchainUserID(address){
@@ -50,16 +51,48 @@ module.exports = class DataQueries{
         }))
     }
 
-    /*
-    static async getListingEventsForHeightRange(start, end){
+    static async getCurrentBlockHeight() {
         const response = await fcl.send(
-            await sdk.build([sdk.getEvents(eventType, start, toBlock)])
+            await sdk.build([
+                sdk.getLatestBlock()
+            ])
         );
+        return response.block.height;
+    }
+
+    static async getListingEventsForHeightRange(start, end){
+        
+        const response = await fcl.send(
+            await sdk.build([
+                sdk.getEvents("A.c1e4f4f4c4257510.Market.MomentListed", start, end)
+            ])
+        );
+
+        return response.events.map(x => ({
+            block_height: x.blockHeight,
+            moment_id: parseInt(x.payload.value.fields[0].value.value),
+            price: parseFloat(x.payload.value.fields[1].value.value),
+            seller_id: x.payload.value.fields[2].value.value.value
+        }));
+
+    }
     
-        // Return a list of events
-        return response.events;
-    }*/
-    
+    static async getPurchaseEventsForHeightRange(start, end){
+        
+        const response = await fcl.send(
+            await sdk.build([
+                sdk.getEvents("A.c1e4f4f4c4257510.Market.MomentPurchased", start, end)
+            ])
+        );
+
+        return response.events.map(x => ({
+            block_height: x.blockHeight,
+            moment_id: parseInt(x.payload.value.fields[0].value.value),
+            price: parseFloat(x.payload.value.fields[1].value.value),
+            seller_id: x.payload.value.fields[2].value.value.value
+        }));
+        
+    }
     /**
      * 
      * @param {*} topshotUsername 
