@@ -6,11 +6,10 @@
  */
 
 const MomentAnalyzer = require('./Components/MomentAnalyzer/MomentAnalyzer') 
+const TopshotUserAnalyzer = require('./Components/TopshotUserAnalyzer/TopshotUserAnalyzer')
 
- class TopshotQueries {
-    constructor() { 
-        //TODO: instantiate transactionAnalyzer, salesAnalyzer, and momentAnalyzer
-    }
+//TODO: Make all the functions async and do error handling
+class TopshotQueries {    
     
     /**
     * 
@@ -18,13 +17,9 @@ const MomentAnalyzer = require('./Components/MomentAnalyzer/MomentAnalyzer')
     * 
     * returns a list containing tuples of [timestamp, value]
     */
-    getPortfolioValueOverTime(topshotUsername) {        
-        //TODO        
-
-        //topshotUserAnalyzer(topshotUsername)
-            //This class will figure out everything in the wallet at each time
-            //Then run momentAnalyzer on each and sum the price up
-        //return topshotUserAnalyzer.getPortfolioValueOverTime()
+    getPortfolioValueHistory(topshotUsername) {        
+        const topshotUserAnalyzer = new TopshotUserAnalyzer(topshotUsername);
+        return topshotUserAnalyzer.getPortfolioValueHistory();                
     }
 
     /**
@@ -34,7 +29,7 @@ const MomentAnalyzer = require('./Components/MomentAnalyzer/MomentAnalyzer')
      * TODO: Right now, we're returning all transactions, but later we'll implement a smart algorithm to reduce it
      */
     getMomentTransactionHistory(momentID){
-        let momentAnalyzer = new MomentAnalyzer(momentID);
+        const momentAnalyzer = new MomentAnalyzer(momentID);
         return momentAnalyzer.getTransactionHistory();        
     }
 
@@ -45,25 +40,9 @@ const MomentAnalyzer = require('./Components/MomentAnalyzer/MomentAnalyzer')
      * @param {*} momentID 
      * @param {if serialNumber is -1, it will assume highest serial number} serialNumber 
      */
-    getMomentValueOverTimeOfSerialNumber(momentID, serialNumber = -1){
-        let momentAnalyzer = new MomentAnalyzer(momentID);
+    getMomentValueHistoryOfSerialNumber(momentID, serialNumber = -1){
+        const momentAnalyzer = new MomentAnalyzer(momentID);
         return momentAnalyzer.getValueHistoryOfSerialNumber(serialNumber);        
-    }
-
-    getPlayerTransactionHistory(playerID){
-        //TODO
-        //playerAnalyzer(playerID)
-            //return playerAnalyzer.getTransactionHistory();
-    }
-
-    /**
-     * Returns a list of MarketVolume objects (sorted by oldest date to newest).
-     * MarketVolume objects describe number of transactions and total price within that interval
-     */
-    getTotalMarketVolumeHistory(){
-        //TODO
-        //marketAnalyzer
-        //return marketAnalyzer.getTotalVolumeHistory()
     }
 
     /**
@@ -86,10 +65,28 @@ const MomentAnalyzer = require('./Components/MomentAnalyzer/MomentAnalyzer')
         //TODO
         //salesListing.getHistoryOfCheapestSalesListingForMoment();
     }
+
+    getPlayerTransactionHistory(playerID){
+        //TODO
+        //playerAnalyzer(playerID)
+            //return playerAnalyzer.getTransactionHistory();
+    }
+
+    /**
+     * Returns a list of MarketVolume objects (sorted by oldest date to newest).
+     * MarketVolume objects describe number of transactions and total price within that interval
+     */
+    getTotalMarketVolumeHistory(){
+        //TODO
+        //marketAnalyzer
+        //return marketAnalyzer.getTotalVolumeHistory()
+    }
 }
 
 
 let test = new TopshotQueries();
 test.getMomentTransactionHistory("MOMENTID");
-test.getMomentValueOverTimeOfSerialNumber("MOMENTID");
-test.getMomentValueOverTimeOfSerialNumber("MOMENTID", "MYSERIAL");
+test.getMomentValueHistoryOfSerialNumber("MOMENTID");
+test.getMomentValueHistoryOfSerialNumber("MOMENTID", "MYSERIAL");
+
+test.getPortfolioValueHistory("TOPSHOTUSERNAME");
