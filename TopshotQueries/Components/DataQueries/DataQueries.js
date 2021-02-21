@@ -1,3 +1,5 @@
+const flow = require('@onflow/sdk')
+
 /**
  * Use this class to get all data you might need from the database or blockchain
  * like transaction history, moments owned by a user, etc.
@@ -36,4 +38,5 @@ module.exports = class DataQueries{
     static getAllTransactionsOfMoment(momentID){
         //TODO
     }
+
 }
