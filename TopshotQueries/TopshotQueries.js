@@ -45,10 +45,9 @@ const MomentAnalyzer = require('./Components/MomentAnalyzer/MomentAnalyzer')
      * @param {*} momentID 
      * @param {if serialNumber is -1, it will assume highest serial number} serialNumber 
      */
-    getMomentValueOverTime(momentID, serialNumber = -1){
-        //TODO
-        //momentAnalyzer(momentID)
-            //return momentAnalyzer.getValueHistoryOfSerialNumber(serialNumber);
+    getMomentValueOverTimeOfSerialNumber(momentID, serialNumber = -1){
+        let momentAnalyzer = new MomentAnalyzer(momentID);
+        return momentAnalyzer.getValueHistoryOfSerialNumber(serialNumber);        
     }
 
     getPlayerTransactionHistory(playerID){
@@ -83,13 +82,14 @@ const MomentAnalyzer = require('./Components/MomentAnalyzer/MomentAnalyzer')
      * Returns a list of [timestamp, cheapestSalesListingPrice] tuples for a given moment
      * @param {*} momentID 
      */
-    getHistoryOfCheapestSalesListing(momentID){
+    getHistoryOfCheapestSalesListing(momentID){             
         //TODO
-        //momentAnalyzer(momentID)
-        //momentAnalyzer.getHistoryOfCheapestSalesListing();
+        //salesListing.getHistoryOfCheapestSalesListingForMoment();
     }
 }
 
 
 let test = new TopshotQueries();
-test.getMomentTransactionHistory("123");
+test.getMomentTransactionHistory("MOMENTID");
+test.getMomentValueOverTimeOfSerialNumber("MOMENTID");
+test.getMomentValueOverTimeOfSerialNumber("MOMENTID", "MYSERIAL");

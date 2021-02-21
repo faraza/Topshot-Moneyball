@@ -12,6 +12,8 @@ module.exports = class MomentAnalyzer{
     
     getValueHistoryOfSerialNumber(serialNumber){
         //TODO
+        console.log("getValueHistoryOfSerialNumber for moment: " + this.momentID + " with serial: " + serialNumber);
+
     }
 
     getValueOfSerialNumberAtTime(serialNumber, time){
