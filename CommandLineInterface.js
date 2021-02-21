@@ -12,11 +12,12 @@ const TopshotQueries = require('./TopshotQueries/TopshotQueries')
 
 function basicTests(){
     let test = new TopshotQueries();
+    
+    test.getPortfolioValueHistory("TOPSHOTUSERNAME");
+
     test.getMomentTransactionHistory("MOMENTID");
     test.getMomentValueHistoryOfSerialNumber("MOMENTID");
     test.getMomentValueHistoryOfSerialNumber("MOMENTID", "MYSERIAL");
-
-    test.getPortfolioValueHistory("TOPSHOTUSERNAME");
 
     test.getLowOutlierSalesListingsOfAllMoments();
     test.getHistoryOfCheapestSalesListing("MOMENTID");

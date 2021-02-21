@@ -49,10 +49,4 @@ module.exports = class TopshotUserAnalyzer{
         return valueOfPortfolio;
 
     }
-
-    getWalletContentsAtTime(timestamp){
-        return DataQueries.getAllMomentsOwnedByTopshotUsername(username, timestamp);
-    }
-
-
 }
