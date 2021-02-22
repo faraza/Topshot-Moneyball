@@ -4,6 +4,11 @@ const sdk = require('@onflow/sdk')
 const { Pool, Client } = require("pg");
 
 module.exports = class BlockchainQuerier{
+
+    constructor(){
+        fcl.config().put("accessNode.api", "https://flow-access-mainnet.portto.io")
+    }
+
     async getMostRecentTransactions(timeInMS){
         let height = await this.getCurrentBlockHeight();
         let blocksToQuery = 150; //TODO: Convert timeInMS to blocksToQuery
