@@ -1,7 +1,7 @@
 //example endpoint: //https://cryptoslam.io/nba-top-shot/run/?Name=Jaylen%20Brown
 function scrapeWebsite(){
     const endpointStart = 'https://cryptoslam.io/nba-top-shot/run/?Name=';
-    let playerNames; //TODO: get it from the file Bryan got
+    // let playerNames = []
 
     for(player in playerNames){
         player = player.trim();
