@@ -23,7 +23,6 @@ class MarginTradeNotifier{
             const ids = tokenIds.map(id => `'${id}'`)
             const query = `SELECT * from moment_map WHERE tokenid IN(${ids.join(",")})`;
             this.client.query(query, (err, res) => {
-                console.log("Error: " + err);
                 resolve(res.rows)
             });
         })
@@ -31,13 +30,13 @@ class MarginTradeNotifier{
 
     async convertTokenIDToPlayID(tokenIds){
         const rows = await this.getCardIDFromTokenIDs(tokenIds);
-        console.log('rows', rows)
+        // console.log('rows', rows)
         const matches = {}
         rows.forEach(r => {
             const key = `${r.name}-${r.momentdate}-${r.season}-${r.playcategory}-${r.set}`;
             matches[r.tokenid] = key;
         })
-        console.log('matches', matches)
+        // console.log('matches', matches)
         return matches
     }
 
