@@ -139,5 +139,5 @@ class MarginTradeNotifier{
     }
 }
 
-
-run()
+let runner =new MarginTradeNotifier();
+runner.run();

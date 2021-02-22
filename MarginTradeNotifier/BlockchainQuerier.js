@@ -1,3 +1,8 @@
+const fcl = require('@onflow/fcl')
+const types = require('@onflow/types')
+const sdk = require('@onflow/sdk')
+const { Pool, Client } = require("pg");
+
 module.exports = class BlockchainQuerier{
     async getMostRecentTransactions(timeInMS){
         let height = await this.getCurrentBlockHeight();
