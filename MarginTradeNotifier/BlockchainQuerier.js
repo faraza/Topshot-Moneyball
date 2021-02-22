@@ -9,18 +9,54 @@ module.exports = class BlockchainQuerier{
         fcl.config().put("accessNode.api", "https://flow-access-mainnet.portto.io")
     }
 
+    prevTransactionHeight = null
     async getMostRecentTransactions(timeInMS){
         let height = await this.getCurrentBlockHeight();
-        let blocksToQuery = 10; //TODO: Convert timeInMS to blocksToQuery
-   
-        return await this.getPurchaseEventsForHeightRange(height - blocksToQuery, height);
+        this.prevTransactionHeight = this.prevTransactionHeight || height - 10; 
+        // console.log(this.prevTransactionHeight, '-', height)
+        try {
+            const range = await this.getPurchaseEventsForHeightRange(this.prevTransactionHeight, height);
+            this.prevTransactionHeight = height
+            return range;
+        } catch (error) {
+            return []
+        }
+        
+        
     }
 
+    prevListingsHeight = null
     async getMostRecentSalesListings(timeInMS){        
         let height = await this.getCurrentBlockHeight();
-        let blocksToQuery = 10; //TODO: Convert timeInMS to blocksToQuery
+        this.prevListingsHeight = this.prevListingsHeight || height - 10; 
+        // console.log(this.prevListingsHeight, '-', height)
+        try {
+            const range = await this.getListingEventsForHeightRange(this.prevListingsHeight, height);
+            this.prevListingsHeight = height
+            return range;
+        } catch (error) {
+            return []
+        }
         
-        return await this.getListingEventsForHeightRange(height - blocksToQuery, height);
+    }
+
+    getFakePurchaseEvents(){
+        //TODO    
+    }
+
+    getFakeSalesListings(){
+        //TODO
+        fakeSalesListings = [
+            {
+              block_height: 12165378,
+              moment_id: 1992125,
+              price: 30,
+              seller_id: '0xef395fdc7b8a8132'
+            },
+            {
+
+            }
+          ];
     }
 
 

@@ -2,9 +2,12 @@ const BlockchainQuerier = require('./BlockchainQuerier')
 const { Pool, Client } = require("pg")
 
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-class MarginTradeNotifier{
-    
+class MarginTradeNotifier {
+
     recentPurchaseHistory = {};
 
     client = new Client({
@@ -13,13 +16,14 @@ class MarginTradeNotifier{
         database: "topshot",
         password: "root",
     });
-    
-    constructor(){
+
+    constructor() {
         this.client.connect();
-    }    
+    }
 
     getCardIDFromTokenIDs(tokenIds) {
         return new Promise((resolve) => {
+            if (tokenIds.length === 0) return resolve([])
             const ids = tokenIds.map(id => `'${id}'`)
             const query = `SELECT * from moment_map WHERE tokenid IN(${ids.join(",")})`;
             this.client.query(query, (err, res) => {
@@ -28,17 +32,16 @@ class MarginTradeNotifier{
         })
     }
 
-    async convertTokenIDToPlayID(tokenIds){
+    async convertTokenIDToPlayID(tokenIds) {
         const rows = await this.getCardIDFromTokenIDs(tokenIds);
-        // console.log('rows', rows)
         const matches = {}
         rows.forEach(r => {
             const key = `${r.name}-${r.momentdate}-${r.season}-${r.playcategory}-${r.set}`;
             matches[r.tokenid] = key;
         })
-        // console.log('matches', matches)
         return matches
     }
+
 
 
     async run() {
@@ -47,17 +50,27 @@ class MarginTradeNotifier{
         let numberOfLoops = 0;
         while (true) {
             let timeInMS = 1000;
-            let recentListings = await blockchain.getMostRecentSalesListings(timeInMS);
+            await sleep(timeInMS)
+
+            let recentListings = await blockchain.getMostRecentSalesListings();
             recentListings = await this.addPlayIDToRecentListings(recentListings);
-            let recentPurchases = await blockchain.getMostRecentTransactions(timeInMS);
-            recentPurchases = this.addPlayIDToRecentPurchases(recentPurchases);
+            let recentPurchases = await blockchain.getMostRecentTransactions();
+            recentPurchases = await this.addPlayIDToRecentPurchases(recentPurchases);
+            const misses = recentPurchases.filter(p => p.playID == null).map(p => ({
+                id: p.seller_id,
+                price: p.price
+            }));
 
+            const prices = recentPurchases.filter(p => p.playID != null).map(p => p.price);
 
-            this.updateRecentPurchaseHistory(recentPurchases)
-            let outlierListings = this.getOutlierListings(recentListings);
-
-            console.log("Outlier listings length: " + outlierListings + " Number of loops: " + numberOfLoops++)
-            console.log(outlierListings)
+            if (recentPurchases.length > 0 || recentListings.length > 0) {
+                console.log("miss seller_ids", misses)
+                console.log("prices", prices)
+                this.updateRecentPurchaseHistory(recentPurchases)
+                let outlierListings = this.getOutlierListings(recentListings);
+                console.log("Outlier listings length: " + outlierListings + " Number of loops: " + numberOfLoops++)
+                console.log(outlierListings)
+            }
         }
     }
 
@@ -74,10 +87,7 @@ class MarginTradeNotifier{
     }
      * 
      */
-    async addPlayIDToRecentListings(recentListings){
-        
-        //TODO
-        //for each in recentListing set its playID attribute to the correct thing
+    async addPlayIDToRecentListings(recentListings) {
         const tokenIDs = recentListings.map(r => r.moment_id)
         const playIDs = await this.convertTokenIDToPlayID(tokenIDs)
 
@@ -87,75 +97,87 @@ class MarginTradeNotifier{
         })
         return newMap
     }
-/**
- * 
- * @param {*} recentPurchases 
- * 
- * {
-    block_height: 12163889,
-    moment_id: 1455471,
-    price: 67,
-    seller_id: '0x79726c42ff757788'
-  }
- */
-    async addPlayIDToRecentPurchases(recentPurchases){        
+    /**
+     * 
+     * @param {*} recentPurchases 
+     * 
+     * {
+        block_height: 12163889,
+        moment_id: 1455471,
+        price: 67,
+        seller_id: '0x79726c42ff757788'
+      }
+     */
+    async addPlayIDToRecentPurchases(recentPurchases) {
         const tokenIDs = recentPurchases.map(r => r.moment_id)
-        const playIDs = this.convertTokenIDToPlayID(tokenIDs)
-        return recentPurchases.map(r => r['playID'] = playIDs[r['moment_id']])
+        const playIDs = await this.convertTokenIDToPlayID(tokenIDs)
+
+        const newMap = recentPurchases.map(r => {
+            r['playID'] = playIDs[r['moment_id']]
+            return r;
+        })
+        return newMap
     }
 
-    updateRecentPurchaseHistory(recentPurchases){
-        for(let purchase in recentPurchases){
-            if(purchase.playID == null) continue;
+    updateRecentPurchaseHistory(recentPurchases) {
+        let numWithPlayIDs = 0;
+        let numWithNullIds = 0;
+        recentPurchases.forEach(purchase => {
+            if (purchase.playID == null) {
+                numWithNullIds++;
+            } else {
+                numWithPlayIDs++;
 
-            if(this.recentPurchaseHistory[purchase.playID] == null){
-                this.recentPurchaseHistory[purchase.playID] = purchase;
+                if (this.recentPurchaseHistory[purchase.playID] == null) {
+                    this.recentPurchaseHistory[purchase.playID] = [purchase];
+                }
+                else if (this.recentPurchaseHistory[purchase.playID].length >= 15) {
+                    this.recentPurchaseHistory[purchase.playID].shift();
+                    this.recentPurchaseHistory[purchase.playID].push(purchase);
+                } else {
+                    this.recentPurchaseHistory[purchase.playID].push(purchase);
+                }
             }
-            else if(this.recentPurchaseHistory[purchase.playID].length >= 15){
-                this.recentPurchaseHistory[purchase.playID].shift();
-                this.recentPurchaseHistory[purchase.playID].push(purchase);
-            }
-            else{
-                this.recentPurchaseHistory[purchase.playID].push(purchase);
-            }
-        }        
+        })
+
+        console.log("Purchase check - Num hits: " + numWithPlayIDs + " num misses: " + numWithNullIds);
     }
 
-    getOutlierListings(recentListings){
+    getOutlierListings(recentListings) {
         let outlierListings = [];
 
-        for (let listing in recentListings){
-            if(listing.playID == null) continue;
+        for (let listing in recentListings) {
+            if (listing.playID == null) continue;
             console.log("Get outlier listings: " + listing)
             listing.purchaseHistory = this.recentPurchaseHistory[listing.playID];
             listing = this.analyzeListingForOutlier(listing)
-            if(listing.isLowOutlier)
+            if (listing.isLowOutlier)
                 outlierListings.push(listing);
         }
 
         return outlierListings;
     }
 
-    analyzeListingForOutlier(listing){  
-        listing.isLowOutlier = false;   
-        if(this.recentPurchaseHistory[listing.playID] == null) return listing;
-        if(this.recentPurchaseHistory[listing.playID].length === 0) return listing;
+    analyzeListingForOutlier(listing) {
+        listing.isLowOutlier = false;
+        if (this.recentPurchaseHistory[listing.playID] == null) return listing;
+        if (this.recentPurchaseHistory[listing.playID].length === 0) return listing;
 
-        let outlierThreshold = .8;
+        let outlierThreshold = .9;
         let cheapestPurchasePrice = 10000000000000000;
 
-        for(let purchase in this.recentPurchaseHistory[listing.playID]){            
-            if(purchase.price < cheapestPurchasePrice)
+        for (let purchase in this.recentPurchaseHistory[listing.playID]) {
+            if (purchase.price < cheapestPurchasePrice)
                 cheapestPurchasePrice = purchase.price;
-        }        
+        }
 
         listing.cheapestRecentPurchasePrice = cheapestPurchasePrice;
-        if(listing.price > cheapestPurchasePrice*outlierThreshold){
+        if (listing.price > cheapestPurchasePrice * outlierThreshold) {
             listing.isLowOutlier = false;
         }
         else
             listing.isLowOutlier = true;
-            
+
         return listing;
     }
 }

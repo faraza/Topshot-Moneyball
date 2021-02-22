@@ -251,7 +251,6 @@ module.exports = class DataQueries {
             const query = `SELECT * from moment_map WHERE tokenid IN(${ids.join(",")})`;
             client.query(query, (err, res) => {
                 resolve(res.rows)
-                client.end();
             });
         })
     }

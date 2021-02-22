@@ -93,13 +93,13 @@ function getDeandreJordanDunkMomentTokenIDs(){
 
 async function printListings(){
     let height = await DataQueries.getCurrentBlockHeight();
-    let timeToQuery = 1500;
-    let salesListings = await DataQueries.getListingEventsForHeightRange(height - timeToQuery, height);
+    let timeToQuery = 10;
+    let salesListings = await DataQueries.getPurchaseEventsForHeightRange(height - timeToQuery, height);
     console.log(salesListings.length);
-    console.log(salesListing)
+    console.log(salesListings)
 }
 
-// printListings();
+printListings();
 // convertJSON();
 
 
@@ -109,7 +109,7 @@ async function printListings(){
 
 
 //https://cryptoslam.io/nba-top-shot/run/?Name=Jaylen%20Brown
-function scrapeWebsite(){
+/* function scrapeWebsite(){
     const endpointStart = 'https://cryptoslam.io/nba-top-shot/run/?Name=';
     let playerNames; //TODO: get it from the file Bryan got
 
@@ -121,4 +121,4 @@ function scrapeWebsite(){
         //TODO: Scrape it
     }
 
-}
+} */
