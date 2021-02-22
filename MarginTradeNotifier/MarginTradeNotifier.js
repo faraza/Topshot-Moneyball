@@ -1,16 +1,30 @@
 const BlockchainQuerier = require('./BlockchainQuerier')
+const { Pool, Client } = require("pg")
+
+
 
 class MarginTradeNotifier{
     
     recentPurchaseHistory = {};
 
+    client = new Client({
+        user: "postgres",
+        host: "35.235.64.237",
+        database: "topshot",
+        password: "root",
+    });
+    
+    constructor(){
+        this.client.connect();
+    }    
+
     getCardIDFromTokenIDs(tokenIds) {
         return new Promise((resolve) => {
             const ids = tokenIds.map(id => `'${id}'`)
             const query = `SELECT * from moment_map WHERE tokenid IN(${ids.join(",")})`;
-            client.query(query, (err, res) => {
+            this.client.query(query, (err, res) => {
                 resolve(res.rows)
-                client.end();
+                this.client.end();
             });
         })
     }
@@ -65,7 +79,7 @@ class MarginTradeNotifier{
         
         //TODO
         //for each in recentListing set its playID attribute to the correct thing
-        tokenIDs = recentListings.map(r => r.moment_id)
+        const tokenIDs = recentListings.map(r => r.moment_id)
         const playIDs = this.convertTokenIDToPlayID(tokenIDs)
         return recentListings.map(r => r['playID'] = playIDs[r['moment_id']])
     }
@@ -80,15 +94,14 @@ class MarginTradeNotifier{
     seller_id: '0x79726c42ff757788'
   }
  */
-    async addPlayIDToRecentPurchases(recentPurchases){
-        //TODO
-        tokenIDs = recentPurchases.map(r => r.moment_id)
+    async addPlayIDToRecentPurchases(recentPurchases){        
+        const tokenIDs = recentPurchases.map(r => r.moment_id)
         const playIDs = this.convertTokenIDToPlayID(tokenIDs)
         return recentPurchases.map(r => r['playID'] = playIDs[r['moment_id']])
     }
 
     updateRecentPurchaseHistory(recentPurchases){
-        for(purchase in recentPurchases){
+        for(let purchase in recentPurchases){
             if(recentPurchaseHistory[purchase.playID] == null){
                 recentPurchaseHistory[purchase.playID] = purchase;
             }
@@ -105,7 +118,7 @@ class MarginTradeNotifier{
     getOutlierListings(recentListings){
         let outlierListings;
 
-        for (listing in recentListings){
+        for (let listing in recentListings){
             listing.purchaseHistory = recentPurchaseHistory[listing.playID];
             listing = this.analyzeListingForOutlier(listing)
             if(listing.isLowOutlier)
@@ -123,7 +136,7 @@ class MarginTradeNotifier{
         let outlierThreshold = .8;
         let cheapestPurchasePrice = 10000000000000000;
 
-        for(purchase in recentPurchaseHistory[listing.playID]){            
+        for(let purchase in recentPurchaseHistory[listing.playID]){            
             if(purchase.price < cheapestPurchasePrice)
                 cheapestPurchasePrice = purchase.price;
         }        
