@@ -16,7 +16,7 @@ class MarginTradeNotifier{
     }
 
     async convertTokenIDToPlayID(tokenIds){
-        const rows = await getCardIDFromTokenIDs(tokenIds);
+        const rows = await this.getCardIDFromTokenIDs(tokenIds);
         console.log('rows', rows)
         const matches = {}
         rows.forEach(r => {
@@ -35,13 +35,13 @@ class MarginTradeNotifier{
         while (true) {
             let timeInMS = 1000;
             let recentListings = await blockchain.getMostRecentSalesListings(timeInMS);
-            recentListings = await addPlayIDToRecentListings(recentListings);
+            recentListings = await this.addPlayIDToRecentListings(recentListings);
             let recentPurchases = await blockchain.getMostRecentTransactions(timeInMS);
             recentPurchases = this.addPlayIDToRecentPurchases(recentPurchases);
 
 
-            updateRecentPurchaseHistory(recentPurchases)
-            let outlierListings = getOutlierListings(recentListings);
+            this.updateRecentPurchaseHistory(recentPurchases)
+            let outlierListings = this.getOutlierListings(recentListings);
 
             console.log("Outlier listings length: " + outlierListings + " Number of loops: " + numberOfLoops++)
             console.log(outlierListings)
@@ -66,7 +66,7 @@ class MarginTradeNotifier{
         //TODO
         //for each in recentListing set its playID attribute to the correct thing
         tokenIDs = recentListings.map(r => r.moment_id)
-        const playIDs = convertTokenIDToPlayID(tokenIDs)
+        const playIDs = this.convertTokenIDToPlayID(tokenIDs)
         return recentListings.map(r => r['playID'] = playIDs[r['moment_id']])
     }
 /**
@@ -83,7 +83,7 @@ class MarginTradeNotifier{
     async addPlayIDToRecentPurchases(recentPurchases){
         //TODO
         tokenIDs = recentPurchases.map(r => r.moment_id)
-        const playIDs = convertTokenIDToPlayID(tokenIDs)
+        const playIDs = this.convertTokenIDToPlayID(tokenIDs)
         return recentPurchases.map(r => r['playID'] = playIDs[r['moment_id']])
     }
 
@@ -107,7 +107,7 @@ class MarginTradeNotifier{
 
         for (listing in recentListings){
             listing.purchaseHistory = recentPurchaseHistory[listing.playID];
-            listing = analyzeListingForOutlier(listing)
+            listing = this.analyzeListingForOutlier(listing)
             if(listing.isLowOutlier)
                 outlierListings.push(listing);
         }
@@ -139,5 +139,5 @@ class MarginTradeNotifier{
     }
 }
 
-let runner =new MarginTradeNotifier();
+let runner = new MarginTradeNotifier();
 runner.run();
