@@ -9,19 +9,21 @@ module.exports = class SalesListingAnalyzer{
      * We define significant as 50% or lower.
      * //TODO: Make the threshold a parameter
      */
-    getLowOutliersForAllMoments(){
+    async getLowOutliersForAllMoments(){        
         const outlierPercentThreshold = .5;
 
-        const allMomentListings =  DataQueries.getAllActiveSalesListingsGroupedByMoment();
+        const salesListingMap =  await DataQueries.getRecentSalesListingsGroupedByMoment()        
 
-        let outlierMomentListings = [];
-        for(singleMomentListings in allMomentListings){
-            singleMomentListings = this.analyzeMomentListingsForOutliers(singleMomentListings);
-            if(singleMomentListings.percentFromCheapestToSecondCheapest < outlierPercentThreshold)
-                outlierMomentListings.push(singleMomentListings);
+        let allLowOutlierData;
+
+        for(const [cardID, listings] of Object.entries(salesListingMap)){
+            let outlierData = this.analyzeListingsForOutliers(listings);
+            outlierData.cardID = cardID;
+            if(outlierData.percentFromCheapestToSecondCheapest < outlierPercentThreshold)
+                allLowOutlierData.push(outlierData);
         }
 
-        return outlierMomentListings;
+        return allLowOutlierData;
     }
 
     getHistoryOfCheapestListingForMoment(momentID){
@@ -29,13 +31,19 @@ module.exports = class SalesListingAnalyzer{
         //TODO
     }
 
-    analyzeMomentListingsForOutliers(momentListings){
+    analyzeListingsForOutliers(listings){
+        let listingAnalysis;
         let cheapestListing, secondCheapestListing;
 
-        for(listing in momentListings.listings){
-            if(cheapestListing === null)
+        if(listings.length() < 3){
+            listingAnalysis.percentFromCheapestToSecondCheapest = 100000;
+            return listingAnalysis;
+        }
+
+        for(listing in listings){
+            if(cheapestListing == null)
                 cheapestListing = listing;
-            else if(secondCheapestListing === null)
+            else if(secondCheapestListing == null)
                 secondCheapestListing = listing;
             else{
                 if(listing.price < cheapestListing.price){
@@ -48,13 +56,9 @@ module.exports = class SalesListingAnalyzer{
             }
         }
 
-        if(momentListings.listings.length() < 10)
-            momentListings.percentFromCheapestToSecondCheapest = 100000;            
-        else{
-            momentListings.percentFromCheapestToSecondCheapest = (cheapestListing.price.toFixed(2))/(secondCheapestListing.price.toFixed(2));
-        }
-
-        momentListings.cheapestListing = cheapestListing;
-        return momentListings;
+        listingAnalysis.percentFromCheapestToSecondCheapest = (cheapestListing.price.toFixed(2))/(secondCheapestListing.price.toFixed(2));
+        listingAnalysis.cheapestListing = cheapestListing;
+        
+        return listingAnalysis;
     }
 }

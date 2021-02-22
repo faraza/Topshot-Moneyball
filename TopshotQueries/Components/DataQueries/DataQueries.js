@@ -2,6 +2,7 @@ const fcl = require('@onflow/fcl')
 const types = require('@onflow/types')
 const sdk = require('@onflow/sdk')
 
+
 /**
  * Use this class to get all data you might need from the database or blockchain
  * like transaction history, moments owned by a user, etc.
@@ -152,5 +153,56 @@ module.exports = class DataQueries{
 
     static getAllActiveSalesListingsGroupedByMoment() {
        
+    }
+
+    static getDeandreJordanDunkMomentTokenIDs(){
+        const data = require('../../../data/DeandreJordan_uncleanData.json')
+        // console.log(data);
+    
+        const newData = data.filter((item)=>{
+            return item.tokens.find((token)=>{
+                return token.attributes.MomentDate === '2020-01-03 01:30:00 +0000 UTC';
+            }) != null;
+        })
+    
+        // console.log(newData)
+        // console.log(newData.length);
+        const tokenIDs = newData.map((item)=>{
+            return item.tokens[0].tokenId;
+        })
+   
+        return tokenIDs;
+        // console.log(tokenIDs);
+        // console.log(tokenIDs.length);
+    }
+
+    static async getRecentSalesListingsGroupedByMoment(){
+        let height = await this.getCurrentBlockHeight();
+        let timeOfEntries = 10; //1500
+        const recentSalesListings = await this.getListingEventsForHeightRange(height - timeOfEntries, height)        
+        const recentListingsGroupedByMoment = DataQueries.groupListingsByMoment(recentSalesListings);
+    }
+
+    static async groupListingsByMoment(listings){
+        let listingsGroupedByMoments = {}
+
+
+        for(let listing in listings){
+            const tokenID = listing.moment_id;            
+            const cardID = DataQueries.getCardIDFromTokenID(tokenID);
+            if(cardID == null) continue;
+
+            if (listingsGroupedByMoments[cardID]) {
+                listingsGroupedByMoments[cardID].push(listing);
+            } else {
+                listingsGroupedByMoments[cardID] = [listing]
+            }
+        }
+
+        return listingsGroupedByMoments;
+    }
+
+    static async getCardIDFromTokenID(tokenID){
+        //TODO: Jon
     }
 }

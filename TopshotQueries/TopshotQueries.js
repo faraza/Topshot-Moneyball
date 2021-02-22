@@ -52,9 +52,9 @@ module.exports = class TopshotQueries {
      * TODO: Add filters like maximum price we want to consider
      * and players to consider (like only care about stars)
      */
-    getLowOutlierSalesListingsOfAllMoments(){        
+    async getLowOutlierSalesListingsOfAllMoments(){        
         const salesListingAnalyzer = new SalesListingAnalyzer();
-        salesListingAnalyzer.getLowOutliersForAllMoments()
+        const outlierForAllMoments = await salesListingAnalyzer.getLowOutliersForAllMoments()
     }
 
     /**
