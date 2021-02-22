@@ -52,9 +52,9 @@ class MarginTradeNotifier {
             let timeInMS = 1000;
             await sleep(timeInMS)
 
-            let recentListings = await blockchain.getMostRecentSalesListings();
+            let recentListings = await blockchain.getFakeSalesListings();//await blockchain.getMostRecentSalesListings();
             recentListings = await this.addPlayIDToRecentListings(recentListings);
-            let recentPurchases = await blockchain.getMostRecentTransactions();
+            let recentPurchases = await blockchain.getFakeRecentTransactions();//await blockchain.getMostRecentTransactions();
             recentPurchases = await this.addPlayIDToRecentPurchases(recentPurchases);
             const misses = recentPurchases.filter(p => p.playID == null).map(p => ({
                 id: p.seller_id,

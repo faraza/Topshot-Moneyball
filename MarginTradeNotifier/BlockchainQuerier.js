@@ -10,6 +10,7 @@ module.exports = class BlockchainQuerier{
     }
 
     prevTransactionHeight = null
+    
     async getMostRecentTransactions(timeInMS){
         let height = await this.getCurrentBlockHeight();
         this.prevTransactionHeight = this.prevTransactionHeight || height - 10; 
@@ -23,6 +24,29 @@ module.exports = class BlockchainQuerier{
         }
         
         
+    }
+
+    getFakeRecentTransactions(){
+        return [{'block_height': 1, 'moment_id': 537605, 'price': 130, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 577100, 'price': 129, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 430089, 'price': 130, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 1113734, 'price': 130, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 90521, 'price': 615, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 559599, 'price': 999, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 559586, 'price': 900, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 246662, 'price': 150, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 551242, 'price': 130, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 394712, 'price': 128, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 1129831, 'price': 128, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 79062, 'price': 574, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 181382, 'price': 500, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 38197, 'price': 275, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 181319, 'price': 575, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 237237, 'price': 143, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 537601, 'price': 129, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 531664, 'price': 129, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 337462, 'price': 139, 'seller_id': 'test'},
+        {'block_height': 1, 'moment_id': 317511, 'price': 139, 'seller_id': 'test'}];
     }
 
     prevListingsHeight = null
@@ -40,23 +64,8 @@ module.exports = class BlockchainQuerier{
         
     }
 
-    getFakePurchaseEvents(){
-        //TODO    
-    }
-
     getFakeSalesListings(){
-        //TODO
-        fakeSalesListings = [
-            {
-              block_height: 12165378,
-              moment_id: 1992125,
-              price: 30,
-              seller_id: '0xef395fdc7b8a8132'
-            },
-            {
-
-            }
-          ];
+        return [{'block_height': 1, 'moment_id': 537605, 'price': 100, 'seller_id': 'test'}]
     }
 
 
