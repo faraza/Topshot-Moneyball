@@ -187,11 +187,32 @@ module.exports = class DataQueries {
         // console.log(tokenIDs.length);
     }
 
+    prevBlockHeight;
+
     static async getRecentSalesListingsGroupedByMoment() {
         let height = await this.getCurrentBlockHeight();
-        let timeOfEntries = 10; //1500
-        const recentSalesListings = await this.getListingEventsForHeightRange(height - timeOfEntries, height)
-        const recentListingsGroupedByMoment = DataQueries.groupListingsByMoment(recentSalesListings);
+        let recentSalesListings = []
+        if (this.prevBlockHeight == null) {
+            recentSalesListings = await this.getListingEventsForHeightRange(height - 10, height)
+        } else {
+            try {
+                recentSalesListings = await this.getListingEventsForHeightRange(this.prevBlockHeight, height)
+            } catch {
+                return [];
+            }
+        }
+        this.prevBlockHeight = height;
+        return recentSalesListings
+    }
+
+    static async getRecentListings() {
+        return new Promise(resolve => {
+            const query = `SELECT * FROM listings WHERE time_stamp > current_timestamp - INTERVAL '30 minutes'`;
+            client.query(query, (err, res) => {
+                resolve(res.rows)
+            });
+        })
+
     }
 
     static async groupListingsByMoment(listings) {
@@ -200,14 +221,14 @@ module.exports = class DataQueries {
         console.log('tokenIds', tokenIds)
         if (tokenIds.length === 0) return;
         const rows = await DataQueries.getCardIDFromTokenIDs(tokenIds);
-        console.log('rows', rows)        
+        console.log('rows', rows)
         const matches = {}
         rows.forEach(r => {
             const key = `${r.name}-${r.momentdate}-${r.season}-${r.playcategory}-${r.set}`;
-            matches[r.tokenid] = key;            
+            matches[r.tokenid] = key;
         })
         console.log('matches', matches)
-        
+
         const listingsGroupedByMoments = {}
 
         listings.forEach(listing => {

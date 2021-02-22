@@ -12,20 +12,22 @@ module.exports = class SalesListingAnalyzer{
     async getLowOutliersForAllMoments(){        
         const outlierPercentThreshold = .5;
 
-        const salesListingMap =  await DataQueries.getRecentSalesListingsGroupedByMoment()  
-        console.log("SalesListingAnalyzer: " + salesListingMap)      
+        const listings = await DataQueries.getRecentListings();
+        const groups = DataQueries.groupListingsByMoment(listings);
+        console.log(groups)
+        // console.log("SalesListingAnalyzer: " + salesListingMap)      
 
-        let allLowOutlierData = [];
-        if(salesListingMap == null) return allLowOutlierData;
+        // let allLowOutlierData = [];
+        // if(salesListingMap == null) return allLowOutlierData;
 
-        for(const [cardID, listings] of Object.entries(salesListingMap)){
-            let outlierData = this.analyzeListingsForOutliers(listings);
-            outlierData.cardID = cardID;
-            if(outlierData.percentFromCheapestToSecondCheapest < outlierPercentThreshold)
-                allLowOutlierData.push(outlierData);
-        }
+        // for(const [cardID, listings] of Object.entries(salesListingMap)){
+        //     let outlierData = this.analyzeListingsForOutliers(listings);
+        //     outlierData.cardID = cardID;
+        //     if(outlierData.percentFromCheapestToSecondCheapest < outlierPercentThreshold)
+        //         allLowOutlierData.push(outlierData);
+        // }
 
-        return allLowOutlierData;
+        // return allLowOutlierData;
     }
 
     getHistoryOfCheapestListingForMoment(momentID){
