@@ -22,7 +22,6 @@ class MarginTradeNotifier{
         return new Promise((resolve) => {
             const ids = tokenIds.map(id => `'${id}'`)
             const query = `SELECT * from moment_map WHERE tokenid IN(${ids.join(",")})`;
-            console.log("Getcardid: " +    query);
             this.client.query(query, (err, res) => {
                 console.log("Error: " + err);
                 resolve(res.rows)
@@ -56,7 +55,6 @@ class MarginTradeNotifier{
 
 
             this.updateRecentPurchaseHistory(recentPurchases)
-            console.log("loop mid");
             let outlierListings = this.getOutlierListings(recentListings);
 
             console.log("Outlier listings length: " + outlierListings + " Number of loops: " + numberOfLoops++)
@@ -125,15 +123,15 @@ class MarginTradeNotifier{
     }
 
     getOutlierListings(recentListings){
-        let outlierListings;
+        let outlierListings = [];
 
         for (let listing in recentListings){
             if(listing.playID == null) continue;
             console.log("Get outlier listings: " + listing)
-            // listing.purchaseHistory = this.recentPurchaseHistory[listing.playID];
-            // listing = this.analyzeListingForOutlier(listing)
-            // if(listing.isLowOutlier)
-            //     outlierListings.push(listing);
+            listing.purchaseHistory = this.recentPurchaseHistory[listing.playID];
+            listing = this.analyzeListingForOutlier(listing)
+            if(listing.isLowOutlier)
+                outlierListings.push(listing);
         }
 
         return outlierListings;
