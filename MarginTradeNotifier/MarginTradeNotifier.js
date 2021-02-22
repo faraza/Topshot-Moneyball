@@ -102,15 +102,15 @@ class MarginTradeNotifier{
 
     updateRecentPurchaseHistory(recentPurchases){
         for(let purchase in recentPurchases){
-            if(recentPurchaseHistory[purchase.playID] == null){
-                recentPurchaseHistory[purchase.playID] = purchase;
+            if(this.recentPurchaseHistory[purchase.playID] == null){
+                this.recentPurchaseHistory[purchase.playID] = purchase;
             }
-            else if(recentPurchaseHistory[purchase.playID].length >= 15){
-                recentPurchaseHistory[purchase.playID].shift();
-                recentPurchaseHistory[purchase.playID].push(purchase);
+            else if(this.recentPurchaseHistory[purchase.playID].length >= 15){
+                this.recentPurchaseHistory[purchase.playID].shift();
+                this.recentPurchaseHistory[purchase.playID].push(purchase);
             }
             else{
-                recentPurchaseHistory[purchase.playID].push(purchase);
+                this.recentPurchaseHistory[purchase.playID].push(purchase);
             }
         }        
     }
@@ -119,7 +119,7 @@ class MarginTradeNotifier{
         let outlierListings;
 
         for (let listing in recentListings){
-            listing.purchaseHistory = recentPurchaseHistory[listing.playID];
+            listing.purchaseHistory = this.recentPurchaseHistory[listing.playID];
             listing = this.analyzeListingForOutlier(listing)
             if(listing.isLowOutlier)
                 outlierListings.push(listing);
@@ -136,7 +136,7 @@ class MarginTradeNotifier{
         let outlierThreshold = .8;
         let cheapestPurchasePrice = 10000000000000000;
 
-        for(let purchase in recentPurchaseHistory[listing.playID]){            
+        for(let purchase in this.recentPurchaseHistory[listing.playID]){            
             if(purchase.price < cheapestPurchasePrice)
                 cheapestPurchasePrice = purchase.price;
         }        
