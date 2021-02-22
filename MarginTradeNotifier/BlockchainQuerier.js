@@ -13,14 +13,14 @@ module.exports = class BlockchainQuerier{
         let height = await this.getCurrentBlockHeight();
         let blocksToQuery = 150; //TODO: Convert timeInMS to blocksToQuery
    
-        return await getPurchaseEventsForHeightRange(height - timeToQuery, height);
+        return await this.getPurchaseEventsForHeightRange(height - blocksToQuery, height);
     }
 
     async getMostRecentSalesListings(timeInMS){        
         let height = await this.getCurrentBlockHeight();
         let blocksToQuery = 150; //TODO: Convert timeInMS to blocksToQuery
         
-        return await getListingEventsForHeightRange(height - timeToQuery, height);
+        return await this.getListingEventsForHeightRange(height - blocksToQuery, height);
     }
 
 
@@ -54,7 +54,7 @@ module.exports = class BlockchainQuerier{
 
     }
 
-    static async getPurchaseEventsForHeightRange(start, end) {
+    async getPurchaseEventsForHeightRange(start, end) {
 
         const response = await fcl.send(
             await sdk.build([
