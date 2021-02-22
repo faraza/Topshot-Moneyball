@@ -12,9 +12,11 @@ module.exports = class SalesListingAnalyzer{
     async getLowOutliersForAllMoments(){        
         const outlierPercentThreshold = .5;
 
-        const salesListingMap =  await DataQueries.getRecentSalesListingsGroupedByMoment()        
+        const salesListingMap =  await DataQueries.getRecentSalesListingsGroupedByMoment()  
+        console.log("SalesListingAnalyzer: " + salesListingMap)      
 
-        let allLowOutlierData;
+        let allLowOutlierData = [];
+        if(salesListingMap == null) return allLowOutlierData;
 
         for(const [cardID, listings] of Object.entries(salesListingMap)){
             let outlierData = this.analyzeListingsForOutliers(listings);

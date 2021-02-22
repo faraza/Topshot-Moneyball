@@ -1,6 +1,7 @@
 const fcl = require('@onflow/fcl')
 const types = require('@onflow/types')
 const sdk = require('@onflow/sdk')
+const { Pool, Client } = require("pg");
 
 
 /**
@@ -15,15 +16,25 @@ const sdk = require('@onflow/sdk')
  */
 
 
-fcl.config().put("accessNode.api", "https://flow-access-mainnet.portto.io") 
+fcl.config().put("accessNode.api", "https://flow-access-mainnet.portto.io")
 
-module.exports = class DataQueries{
+const client = new Client({
+    user: "postgres",
+    host: "35.235.64.237",
+    database: "topshot",
+    password: "root",
+});
+client.connect();
+
+
+
+module.exports = class DataQueries {
 
     /**
      * Example getAllMomentsOwnedByBlockchainUserID("0xdc37f43c2d98de15")
      * @param {string} address the hex number representing account blockchain address
      */
-    static async getAllMomentsOwnedByBlockchainUserID(address){
+    static async getAllMomentsOwnedByBlockchainUserID(address) {
         const data = await fcl.send([
             fcl.script`
             import TopShot from 0x0b2a3299cc857e29
@@ -44,7 +55,7 @@ module.exports = class DataQueries{
                 fcl.arg(address, types.Address),
             ]),
         ])
-        .then(fcl.decode)
+            .then(fcl.decode)
 
         return Object.keys(data).map((module_id) => ({
             module_id: module_id,
@@ -54,11 +65,11 @@ module.exports = class DataQueries{
         }))
     }
 
-        /**
-     * Example getAllMomentsOwnedByBlockchainUserID("0xdc37f43c2d98de15")
-     * @param {string} address the hex number representing account blockchain address
-     */
-    static async getAllMomentsListedByBlockchainUserID(address){
+    /**
+ * Example getAllMomentsOwnedByBlockchainUserID("0xdc37f43c2d98de15")
+ * @param {string} address the hex number representing account blockchain address
+ */
+    static async getAllMomentsListedByBlockchainUserID(address) {
         const data = await fcl.send([
             fcl.script`
             import TopShot from 0x0b2a3299cc857e29
@@ -79,7 +90,7 @@ module.exports = class DataQueries{
                 fcl.arg(address, types.Address),
             ]),
         ])
-        .then(fcl.decode)
+            .then(fcl.decode)
 
         return Object.keys(data).map((module_id) => ({
             module_id: module_id,
@@ -98,8 +109,8 @@ module.exports = class DataQueries{
         return response.block.height;
     }
 
-    static async getListingEventsForHeightRange(start, end){
-        
+    static async getListingEventsForHeightRange(start, end) {
+
         const response = await fcl.send(
             await sdk.build([
                 sdk.getEvents("A.c1e4f4f4c4257510.Market.MomentListed", start, end)
@@ -114,9 +125,9 @@ module.exports = class DataQueries{
         }));
 
     }
-    
-    static async getPurchaseEventsForHeightRange(start, end){
-        
+
+    static async getPurchaseEventsForHeightRange(start, end) {
+
         const response = await fcl.send(
             await sdk.build([
                 sdk.getEvents("A.c1e4f4f4c4257510.Market.MomentPurchased", start, end)
@@ -129,80 +140,98 @@ module.exports = class DataQueries{
             price: parseFloat(x.payload.value.fields[1].value.value),
             seller_id: x.payload.value.fields[2].value.value.value
         }));
-        
+
     }
     /**
      * 
      * @param {*} topshotUsername 
      * @param {If nothing is passed or negative number is passed, assume current time} timestamp 
      */
-    static getAllMomentsOwnedByTopshotUsername(topshotUsername, timestamp = -1){
+    static getAllMomentsOwnedByTopshotUsername(topshotUsername, timestamp = -1) {
         const blockchainUserID = this.convertTopshotUsernameToBlockchainUserID(topshotUsername);
         return this.getAllMomentsOwnedByBlockchainUserID(blockchainUserID, timestamp);
     }
 
-    static convertTopshotUsernameToBlockchainUserID(topshotUsername){
+    static convertTopshotUsernameToBlockchainUserID(topshotUsername) {
         //TODO: Do some HTTP GET stuff to figure this out
         return topshotUsername + "_CONVERTED";
     }
-    
-    static getAllTransactionsOfMoment(momentID){
+
+    static getAllTransactionsOfMoment(momentID) {
         //TODO
     }
 
 
     static getAllActiveSalesListingsGroupedByMoment() {
-       
+
     }
 
-    static getDeandreJordanDunkMomentTokenIDs(){
+    static getDeandreJordanDunkMomentTokenIDs() {
         const data = require('../../../data/DeandreJordan_uncleanData.json')
         // console.log(data);
-    
-        const newData = data.filter((item)=>{
-            return item.tokens.find((token)=>{
+
+        const newData = data.filter((item) => {
+            return item.tokens.find((token) => {
                 return token.attributes.MomentDate === '2020-01-03 01:30:00 +0000 UTC';
             }) != null;
         })
-    
+
         // console.log(newData)
         // console.log(newData.length);
-        const tokenIDs = newData.map((item)=>{
+        const tokenIDs = newData.map((item) => {
             return item.tokens[0].tokenId;
         })
-   
+
         return tokenIDs;
         // console.log(tokenIDs);
         // console.log(tokenIDs.length);
     }
 
-    static async getRecentSalesListingsGroupedByMoment(){
+    static async getRecentSalesListingsGroupedByMoment() {
         let height = await this.getCurrentBlockHeight();
         let timeOfEntries = 10; //1500
-        const recentSalesListings = await this.getListingEventsForHeightRange(height - timeOfEntries, height)        
+        const recentSalesListings = await this.getListingEventsForHeightRange(height - timeOfEntries, height)
         const recentListingsGroupedByMoment = DataQueries.groupListingsByMoment(recentSalesListings);
     }
 
-    static async groupListingsByMoment(listings){
-        let listingsGroupedByMoments = {}
+    static async groupListingsByMoment(listings) {
 
+        const tokenIds = listings.map(l => l.moment_id);
+        console.log('tokenIds', tokenIds)
+        if (tokenIds.length === 0) return;
+        const rows = await DataQueries.getCardIDFromTokenIDs(tokenIds);
+        console.log('rows', rows)        
+        const matches = {}
+        rows.forEach(r => {
+            const key = `${r.name}-${r.momentdate}-${r.season}-${r.playcategory}-${r.set}`;
+            matches[r.tokenid] = key;            
+        })
+        console.log('matches', matches)
+        
+        const listingsGroupedByMoments = {}
 
-        for(let listing in listings){
-            const tokenID = listing.moment_id;            
-            const cardID = DataQueries.getCardIDFromTokenID(tokenID);
-            if(cardID == null) continue;
-
-            if (listingsGroupedByMoments[cardID]) {
-                listingsGroupedByMoments[cardID].push(listing);
-            } else {
-                listingsGroupedByMoments[cardID] = [listing]
+        listings.forEach(listing => {
+            const key = matches[listing.moment_id.toString()]
+            if (key != null) {
+                if (listingsGroupedByMoments[key] != null) {
+                    listingsGroupedByMoments[key].push(listing)
+                } else {
+                    listingsGroupedByMoments[key] = [listing]
+                }
             }
-        }
-
+        })
+        console.log(listingsGroupedByMoments)
         return listingsGroupedByMoments;
     }
 
-    static async getCardIDFromTokenID(tokenID){
-        //TODO: Jon
+    static getCardIDFromTokenIDs(tokenIds) {
+        return new Promise((resolve) => {
+            const ids = tokenIds.map(id => `'${id}'`)
+            const query = `SELECT * from moment_map WHERE tokenid IN(${ids.join(",")})`;
+            client.query(query, (err, res) => {
+                resolve(res.rows)
+                client.end();
+            });
+        })
     }
 }

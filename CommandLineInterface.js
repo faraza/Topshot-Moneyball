@@ -93,8 +93,10 @@ function getDeandreJordanDunkMomentTokenIDs(){
 
 async function printListings(){
     let height = await DataQueries.getCurrentBlockHeight();
-    let salesListings = await DataQueries.getListingEventsForHeightRange(height - 1500, height);
-    console.log(salesListings);
+    let timeToQuery = 1500;
+    let salesListings = await DataQueries.getListingEventsForHeightRange(height - timeToQuery, height);
+    console.log(salesListings.length);
+    console.log(salesListing)
 }
 
 // printListings();
