@@ -11,14 +11,14 @@ module.exports = class BlockchainQuerier{
 
     async getMostRecentTransactions(timeInMS){
         let height = await this.getCurrentBlockHeight();
-        let blocksToQuery = 150; //TODO: Convert timeInMS to blocksToQuery
+        let blocksToQuery = 10; //TODO: Convert timeInMS to blocksToQuery
    
         return await this.getPurchaseEventsForHeightRange(height - blocksToQuery, height);
     }
 
     async getMostRecentSalesListings(timeInMS){        
         let height = await this.getCurrentBlockHeight();
-        let blocksToQuery = 150; //TODO: Convert timeInMS to blocksToQuery
+        let blocksToQuery = 10; //TODO: Convert timeInMS to blocksToQuery
         
         return await this.getListingEventsForHeightRange(height - blocksToQuery, height);
     }

@@ -22,9 +22,10 @@ class MarginTradeNotifier{
         return new Promise((resolve) => {
             const ids = tokenIds.map(id => `'${id}'`)
             const query = `SELECT * from moment_map WHERE tokenid IN(${ids.join(",")})`;
+            console.log("Getcardid: " +    query);
             this.client.query(query, (err, res) => {
+                console.log("Error: " + err);
                 resolve(res.rows)
-                this.client.end();
             });
         })
     }
@@ -55,6 +56,7 @@ class MarginTradeNotifier{
 
 
             this.updateRecentPurchaseHistory(recentPurchases)
+            console.log("loop mid");
             let outlierListings = this.getOutlierListings(recentListings);
 
             console.log("Outlier listings length: " + outlierListings + " Number of loops: " + numberOfLoops++)
@@ -80,8 +82,13 @@ class MarginTradeNotifier{
         //TODO
         //for each in recentListing set its playID attribute to the correct thing
         const tokenIDs = recentListings.map(r => r.moment_id)
-        const playIDs = this.convertTokenIDToPlayID(tokenIDs)
-        return recentListings.map(r => r['playID'] = playIDs[r['moment_id']])
+        const playIDs = await this.convertTokenIDToPlayID(tokenIDs)
+
+        const newMap = recentListings.map(r => {
+            r['playID'] = playIDs[r['moment_id']]
+            return r;
+        })
+        return newMap
     }
 /**
  * 
@@ -102,6 +109,8 @@ class MarginTradeNotifier{
 
     updateRecentPurchaseHistory(recentPurchases){
         for(let purchase in recentPurchases){
+            if(purchase.playID == null) continue;
+
             if(this.recentPurchaseHistory[purchase.playID] == null){
                 this.recentPurchaseHistory[purchase.playID] = purchase;
             }
@@ -119,10 +128,12 @@ class MarginTradeNotifier{
         let outlierListings;
 
         for (let listing in recentListings){
-            listing.purchaseHistory = this.recentPurchaseHistory[listing.playID];
-            listing = this.analyzeListingForOutlier(listing)
-            if(listing.isLowOutlier)
-                outlierListings.push(listing);
+            if(listing.playID == null) continue;
+            console.log("Get outlier listings: " + listing)
+            // listing.purchaseHistory = this.recentPurchaseHistory[listing.playID];
+            // listing = this.analyzeListingForOutlier(listing)
+            // if(listing.isLowOutlier)
+            //     outlierListings.push(listing);
         }
 
         return outlierListings;
