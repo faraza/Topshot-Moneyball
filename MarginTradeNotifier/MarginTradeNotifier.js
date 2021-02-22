@@ -5,30 +5,34 @@ class MarginTradeNotifier{
     recentPurchaseHistory = {};
 
 
-    async convertTokenIDToPlayID(tokenID){
-        //TODO: Bryan
-    }
-
 
     async run() {
         let blockchain = new BlockchainQuerier();
 
+        let numberOfLoops = 0;
         while (true) {
             let timeInMS = 1000;
-            const recentListings = await blockchain.getMostRecentSalesListings(timeInMS);
+            let recentListings = await blockchain.getMostRecentSalesListings(timeInMS);
             recentListings = await addPlayIDToRecentListings(recentListings);
-            const recentPurchases = await blockchain.getMostRecentTransactions(timeInMS);
+            let recentPurchases = await blockchain.getMostRecentTransactions(timeInMS);
+            recentPurchases = this.addPlayIDToRecentPurchases(recentPurchases);
+
 
             updateRecentPurchaseHistory(recentPurchases)
             let outlierListings = getOutlierListings(recentListings);
 
-            console.log("Outlier listing")
+            console.log("Outlier listings length: " + outlierListings + " Number of loops: " + numberOfLoops++)
+            console.log(outlierListings)
         }
     }
 
     async addPlayIDToRecentListings(recentListings){
         //TODO
         //for each in recentListing set its playID attribute to the correct thing
+    }
+
+    async addPlayIDToRecentPurchases(recentPurchases){
+        //TODO
     }
 
     updateRecentPurchaseHistory(recentPurchases){
