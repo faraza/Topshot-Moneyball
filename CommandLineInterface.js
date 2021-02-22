@@ -25,12 +25,12 @@ const DataQueries = require('./TopshotQueries/Components/DataQueries/DataQueries
  */
 if (argv.account) {
     (async function() {
-        let moments = await DataQueries.getAllMomentsOwnedByBlockchainUserID(argv.account);
+        let moments = await DataQueries.getAllMomentsListedByBlockchainUserID(argv.account);
         console.log(moments);
     })()
 }
 
-if (argv.listings ) {
+if (argv.listings) {
     (async function() {
         let height = await DataQueries.getCurrentBlockHeight();
         let moments = await DataQueries.getListingEventsForHeightRange(height - 1500, height);
