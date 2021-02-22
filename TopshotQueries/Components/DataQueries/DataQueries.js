@@ -48,7 +48,7 @@ module.exports = class DataQueries{
         return Object.keys(data).map((module_id) => ({
             module_id: module_id,
             set_id: data[module_id].setID,
-            play_id: data[module_id].setID,
+            play_id: data[module_id].playID,
             serial_number: data[module_id].serialNumber,
         }))
     }
@@ -83,7 +83,7 @@ module.exports = class DataQueries{
         return Object.keys(data).map((module_id) => ({
             module_id: module_id,
             set_id: data[module_id].setID,
-            play_id: data[module_id].setID,
+            play_id: data[module_id].playID,
             serial_number: data[module_id].serialNumber,
         }))
     }
