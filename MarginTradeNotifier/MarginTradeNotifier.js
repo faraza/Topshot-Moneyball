@@ -52,12 +52,12 @@ class MarginTradeNotifier {
             let timeInMS = 1000;
             await sleep(timeInMS)
 
-            // let recentListings = await blockchain.getFakeSalesListings();
-            let recentListings = await blockchain.getMostRecentSalesListings();
+            let recentListings = await blockchain.getFakeSalesListings();
+            // let recentListings = await blockchain.getMostRecentSalesListings();
             recentListings = await this.addPlayIDToRecentListings(recentListings);
             
-            // let recentPurchases = await blockchain.getFakeRecentTransactions();
-            let recentPurchases = await blockchain.getMostRecentTransactions();
+            let recentPurchases = await blockchain.getFakeRecentTransactions();
+            // let recentPurchases = await blockchain.getMostRecentTransactions();
             recentPurchases = await this.addPlayIDToRecentPurchases(recentPurchases);
             const misses = recentPurchases.filter(p => p.playID == null).map(p => ({
                 id: p.seller_id,
@@ -168,9 +168,9 @@ class MarginTradeNotifier {
         if (this.recentPurchaseHistory[listing.playID] == null) return listing;
         if (this.recentPurchaseHistory[listing.playID].length === 0) return listing;
 
-        let outlierThreshold = .9;
+        let outlierThreshold = 2; //TODO: This should be less than 1
         
-        let cheapestPurchasePrice = this.recentPurchaseHistory[listing.playID][0];
+        let cheapestPurchasePrice = this.recentPurchaseHistory[listing.playID][0].price;
 
         for (let i =0; i < this.recentPurchaseHistory[listing.playID].length; i++) {
             let purchase = this.recentPurchaseHistory[listing.playID][i];
@@ -180,11 +180,14 @@ class MarginTradeNotifier {
                 
 
         listing.cheapestRecentPurchasePrice = cheapestPurchasePrice;
-        if (listing.price > cheapestPurchasePrice * outlierThreshold) {
-            listing.isLowOutlier = false;
+        console.log("***analyzeListingForOutlier. Listing price: " + listing.price + " cheapest: " + (cheapestPurchasePrice*outlierThreshold))
+
+        if (listing.price < (cheapestPurchasePrice * outlierThreshold)) {
+            listing.isLowOutlier = true;
+            console.log("***Outlier found. Listing price: " + listing.price + " cheapest: " + (cheapestPurchasePrice*outlierThreshold))
         }
         else
-            listing.isLowOutlier = true;
+            listing.isLowOutlier = false;
 
         return listing;
     }
