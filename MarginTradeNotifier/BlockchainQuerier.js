@@ -5,21 +5,34 @@ const { Pool, Client } = require("pg");
 
 module.exports = class BlockchainQuerier{
 
+    prevTransactionStartTime;
+    prevSalesListingStartTime;
+
     constructor(){
         fcl.config().put("accessNode.api", "https://flow-access-mainnet.portto.io")
+        this.prevTransactionStartTime = new Date();
+        this.prevSalesListingStartTime = new Date(); 
     }
 
     prevTransactionHeight = null
     
+    
     async getMostRecentTransactions(timeInMS){
         let height = await this.getCurrentBlockHeight();
         this.prevTransactionHeight = this.prevTransactionHeight || height - 10; 
-        // console.log(this.prevTransactionHeight, '-', height)
+
         try {
             const range = await this.getPurchaseEventsForHeightRange(this.prevTransactionHeight, height);
             this.prevTransactionHeight = height
+
+            let transactionEndTime = new Date();
+            console.log("Get most recent transaction. Size: " + range.length + " Time of loop: " + (transactionEndTime - this.prevTransactionStartTime));
+            this.prevTransactionStartTime = transactionEndTime;
             return range;
         } catch (error) {
+            let transactionEndTime = new Date();
+            // console.log("Get most recent transaction. ERROR: " + error + " Time of loop: " + (transactionEndTime - this.prevTransactionStartTime));
+            this.prevTransactionStartTime = transactionEndTime;
             return []
         }
         
@@ -53,12 +66,19 @@ module.exports = class BlockchainQuerier{
     async getMostRecentSalesListings(timeInMS){        
         let height = await this.getCurrentBlockHeight();
         this.prevListingsHeight = this.prevListingsHeight || height - 10; 
-        // console.log(this.prevListingsHeight, '-', height)
         try {
             const range = await this.getListingEventsForHeightRange(this.prevListingsHeight, height);
             this.prevListingsHeight = height
+
+            let listingEndTime = new Date();
+            console.log("Get most recent listing. Size: " + range.length + " Time of loop: " + (listingEndTime - this.prevListingStartTime));
+            this.prevListingStartTime = listingEndTime;
             return range;
         } catch (error) {
+            let listingEndTime = new Date();
+            // console.log("Get most recent listing. ERROR: " + error + " Time of loop: " + (listingEndTime - this.prevListingStartTime));
+            this.prevListingStartTime = listingEndTime;
+
             return []
         }
         
