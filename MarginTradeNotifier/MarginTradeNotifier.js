@@ -72,7 +72,6 @@ class MarginTradeNotifier {
                 console.log(outlierListings)
             }
 
-            break; //TODO: Just for testing
         }
     }
 
@@ -162,7 +161,6 @@ class MarginTradeNotifier {
 
     analyzeListingForOutlier(listing) {
         listing.isLowOutlier = false;
-        console.log("analyzeListingForOutlier")
 
         if (this.recentPurchaseHistory[listing.playID] == null) return listing;
         if (this.recentPurchaseHistory[listing.playID].length === 0) return listing;
