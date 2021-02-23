@@ -189,6 +189,8 @@ class MarginTradeNotifier {
         else
             listing.isLowOutlier = false;
 
+        listing.purchaseHistoryLength = this.recentPurchaseHistory[listing.playID].length;
+
         return listing;
     }
 }
