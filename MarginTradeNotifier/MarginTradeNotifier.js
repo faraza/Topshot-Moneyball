@@ -52,9 +52,12 @@ class MarginTradeNotifier {
             let timeInMS = 1000;
             await sleep(timeInMS)
 
-            let recentListings = await blockchain.getFakeSalesListings();//await blockchain.getMostRecentSalesListings();
+            // let recentListings = await blockchain.getFakeSalesListings();
+            let recentListings = await blockchain.getMostRecentSalesListings();
             recentListings = await this.addPlayIDToRecentListings(recentListings);
-            let recentPurchases = await blockchain.getFakeRecentTransactions();//await blockchain.getMostRecentTransactions();
+            
+            // let recentPurchases = await blockchain.getFakeRecentTransactions();
+            let recentPurchases = await blockchain.getMostRecentTransactions();
             recentPurchases = await this.addPlayIDToRecentPurchases(recentPurchases);
             const misses = recentPurchases.filter(p => p.playID == null).map(p => ({
                 id: p.seller_id,
@@ -64,11 +67,11 @@ class MarginTradeNotifier {
             const prices = recentPurchases.filter(p => p.playID != null).map(p => p.price);
 
             if (recentPurchases.length > 0 || recentListings.length > 0) {
-                console.log("miss seller_ids", misses)
-                console.log("prices", prices)
+                // console.log("miss seller_ids", misses)
+                // console.log("prices", prices)
                 this.updateRecentPurchaseHistory(recentPurchases)
                 let outlierListings = this.getOutlierListings(recentListings);
-                console.log("Outlier listings length: " + outlierListings + " Number of loops: " + numberOfLoops++)
+                console.log("Outlier listings length: " + outlierListings.length + " Number of loops: " + numberOfLoops++)
                 console.log(outlierListings)
             }
 
@@ -174,9 +177,7 @@ class MarginTradeNotifier {
             if (purchase.price < cheapestPurchasePrice)
                 cheapestPurchasePrice = purchase.price;
         }
-
-        console.log(listing)
-        console.log(this.recentPurchaseHistory[listing.playID])
+                
 
         listing.cheapestRecentPurchasePrice = cheapestPurchasePrice;
         if (listing.price > cheapestPurchasePrice * outlierThreshold) {
