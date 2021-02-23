@@ -71,6 +71,8 @@ class MarginTradeNotifier {
                 console.log("Outlier listings length: " + outlierListings + " Number of loops: " + numberOfLoops++)
                 console.log(outlierListings)
             }
+
+            break; //TODO: Just for testing
         }
     }
 
@@ -144,14 +146,10 @@ class MarginTradeNotifier {
     }
 
     getOutlierListings(recentListings) {
-        let outlierListings = [];
-
-        console.log("1**** getOutlierListings: ", recentListings.length)
-        console.log("2**** getOutlierListings: ", recentListings)
+        let outlierListings = [];        
         
         for (let i = 0; i < recentListings.length; i++) {
-            let listing = recentListings[i];
-            console.log("***** Get outlier listings: " + listing)
+            let listing = recentListings[i];            
             if (listing.playID == null) continue;            
             listing.purchaseHistory = this.recentPurchaseHistory[listing.playID];
             listing = this.analyzeListingForOutlier(listing)
@@ -170,9 +168,11 @@ class MarginTradeNotifier {
         if (this.recentPurchaseHistory[listing.playID].length === 0) return listing;
 
         let outlierThreshold = .9;
-        let cheapestPurchasePrice = 10000000000000000;
+        
+        let cheapestPurchasePrice = this.recentPurchaseHistory[listing.playID][0];
 
-        for (let purchase in this.recentPurchaseHistory[listing.playID]) {
+        for (let i =0; i < this.recentPurchaseHistory[listing.playID].length; i++) {
+            let purchase = this.recentPurchaseHistory[listing.playID][i];
             if (purchase.price < cheapestPurchasePrice)
                 cheapestPurchasePrice = purchase.price;
         }
