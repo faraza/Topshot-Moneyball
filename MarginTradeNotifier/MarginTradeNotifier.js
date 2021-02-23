@@ -48,9 +48,8 @@ class MarginTradeNotifier {
         let blockchain = new BlockchainQuerier();
 
         let numberOfLoops = 0;
-        while (true) {
-            let timeInMS = 1000;
-            await sleep(timeInMS)
+        let lastLoopTime = new Date();
+        while (true) {                        
 
             // let recentListings = await blockchain.getFakeSalesListings();
             let recentListings = await blockchain.getMostRecentSalesListings();
@@ -71,10 +70,14 @@ class MarginTradeNotifier {
                 // console.log("prices", prices)
                 this.updateRecentPurchaseHistory(recentPurchases)
                 let outlierListings = this.getOutlierListings(recentListings);
-                console.log("Outlier listings length: " + outlierListings.length + " Number of loops: " + numberOfLoops++)
+                console.log("Outlier listings length: " + outlierListings.length)
                 console.log(outlierListings)
             }
 
+            let currentLoopTime = new Date()
+            let timePassed = currentLoopTime - lastLoopTime;
+            lastLoopTime = currentLoopTime;
+            console.log("Number of loops: " + numberOfLoops++ + " time between loops: " + timePassed);
         }
     }
 
@@ -180,7 +183,6 @@ class MarginTradeNotifier {
                 
 
         listing.cheapestRecentPurchasePrice = cheapestPurchasePrice;
-        console.log("***analyzeListingForOutlier. Listing price: " + listing.price + " cheapest: " + (cheapestPurchasePrice*outlierThreshold))
 
         if (listing.price < (cheapestPurchasePrice * outlierThreshold)) {
             listing.isLowOutlier = true;
