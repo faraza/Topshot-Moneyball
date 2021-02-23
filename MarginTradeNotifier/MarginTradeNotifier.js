@@ -51,12 +51,15 @@ class MarginTradeNotifier {
         let lastLoopTime = new Date();
         while (true) {                        
 
+            let recentListings, recentPurchases;
+            [recentListings, recentPurchases] = await Promise.all([blockchain.getMostRecentSalesListings(), blockchain.getMostRecentTransactions()]);
+
             // let recentListings = await blockchain.getFakeSalesListings();
-            let recentListings = await blockchain.getMostRecentSalesListings();
+            // let recentListings = await blockchain.getMostRecentSalesListings();
             recentListings = await this.addPlayIDToRecentListings(recentListings);
             
             // let recentPurchases = await blockchain.getFakeRecentTransactions();
-            let recentPurchases = await blockchain.getMostRecentTransactions();
+            // let recentPurchases = await blockchain.getMostRecentTransactions();
             recentPurchases = await this.addPlayIDToRecentPurchases(recentPurchases);
             const misses = recentPurchases.filter(p => p.playID == null).map(p => ({
                 id: p.seller_id,
