@@ -49,6 +49,7 @@ class MarginTradeNotifier {
 
         let numberOfLoops = 0;
         let lastLoopTime = new Date();
+        //TODO: We can get a MAJOR speedup by running listings and purchases in separate threads
         while (true) {                        
 
             let recentListings, recentPurchases;
@@ -68,13 +69,16 @@ class MarginTradeNotifier {
 
             const prices = recentPurchases.filter(p => p.playID != null).map(p => p.price);
 
+            this.updateRecentPurchaseHistory(recentPurchases)
+            let outlierListings = this.getOutlierListings(recentListings);
+            console.log("Outlier listings length: " + outlierListings.length)
+            console.log(outlierListings)
+
+
             if (recentPurchases.length > 0 || recentListings.length > 0) {
                 // console.log("miss seller_ids", misses)
                 // console.log("prices", prices)
-                this.updateRecentPurchaseHistory(recentPurchases)
-                let outlierListings = this.getOutlierListings(recentListings);
-                console.log("Outlier listings length: " + outlierListings.length)
-                console.log(outlierListings)
+                
             }
 
             let currentLoopTime = new Date()
@@ -130,6 +134,8 @@ class MarginTradeNotifier {
     }
 
     updateRecentPurchaseHistory(recentPurchases) {
+        if(recentPurchases.length == 0) return;
+
         let numWithPlayIDs = 0;
         let numWithNullIds = 0;
         recentPurchases.forEach(purchase => {
@@ -154,7 +160,9 @@ class MarginTradeNotifier {
     }
 
     getOutlierListings(recentListings) {
-        let outlierListings = [];        
+        if(recentListings.length === 0) return [];
+
+        let outlierListings = [];                
         
         for (let i = 0; i < recentListings.length; i++) {
             let listing = recentListings[i];            
