@@ -53,15 +53,12 @@ class MarginTradeNotifier {
         while (true) {                        
 
             let recentListings, recentPurchases;
-            [recentListings, recentPurchases] = await Promise.all([blockchain.getMostRecentSalesListings(), blockchain.getMostRecentTransactions()]);
-
-            // let recentListings = await blockchain.getFakeSalesListings();
-            // let recentListings = await blockchain.getMostRecentSalesListings();
-            recentListings = await this.addPlayIDToRecentListings(recentListings);
-            
+            [recentListings, recentPurchases] = await Promise.all([blockchain.getMostRecentSalesListings(), blockchain.getMostRecentTransactions()]);            
+            // let recentListings = await blockchain.getFakeSalesListings();            
             // let recentPurchases = await blockchain.getFakeRecentTransactions();
-            // let recentPurchases = await blockchain.getMostRecentTransactions();
-            recentPurchases = await this.addPlayIDToRecentPurchases(recentPurchases);
+
+            [recentListings, recentPurchases] = await Promise.all([this.addPlayIDToRecentListings(recentListings), this.addPlayIDToRecentPurchases(recentPurchases)]);
+                                    
             const misses = recentPurchases.filter(p => p.playID == null).map(p => ({
                 id: p.seller_id,
                 price: p.price
@@ -74,12 +71,6 @@ class MarginTradeNotifier {
             console.log("Outlier listings length: " + outlierListings.length)
             console.log(outlierListings)
 
-
-            if (recentPurchases.length > 0 || recentListings.length > 0) {
-                // console.log("miss seller_ids", misses)
-                // console.log("prices", prices)
-                
-            }
 
             let currentLoopTime = new Date()
             let timePassed = currentLoopTime - lastLoopTime;
